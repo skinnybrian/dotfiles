@@ -23,5 +23,8 @@ eval "$(nodenv init -)"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # alias
+alias zshrc="vim .zshrc"
 alias szsh="source ~/.zshrc"
 
+alias gst="git status"
+alias gaa="git add ."
