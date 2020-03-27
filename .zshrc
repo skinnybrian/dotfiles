@@ -4,6 +4,10 @@ fpath+=$HOME/.zsh/pure
 autoload -U promptinit; promptinit
 prompt pure
 
+# colors
+export LSCOLORS=Exfxcxdxbxegedabagacad
+alias ls="ls -G"
+
 # zplug
 zplug "zplug/zplug", hook-build:"zplug --self-manage"
 zplug "mafredri/zsh-async", from:github
