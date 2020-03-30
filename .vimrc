@@ -199,6 +199,9 @@ Plug 'simeji/winresizer'
 
 " WakaTime
 Plug 'wakatime/vim-wakatime'
+
+" vim-vue
+Plug 'posva/vim-vue'
 call plug#end()
 
 " --- suan/vim-instant-markdown --- 
