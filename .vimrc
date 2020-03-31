@@ -246,6 +246,9 @@ inoremap <C-P> <Esc>:call PhpDocSingle()<CR>i
 nnoremap <C-P> :call PhpDocSingle()<CR>
 vnoremap <C-P> :call PhpDocSingle()<CR>
 
+" --- posva/vim-vue ---
+autocmd FileType vue syntax sync fromstart
+
 "--------------------
 " Vim Theme Settings
 "--------------------
