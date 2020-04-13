@@ -202,6 +202,9 @@ Plug 'wakatime/vim-wakatime'
 
 " vim-vue
 Plug 'posva/vim-vue'
+
+" surround.vim
+Plug 'tpope/vim-surround'
 call plug#end()
 
 " --- suan/vim-instant-markdown --- 
