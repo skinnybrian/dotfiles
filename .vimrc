@@ -205,6 +205,9 @@ Plug 'posva/vim-vue'
 
 " surround.vim
 Plug 'tpope/vim-surround'
+
+" vim-slim
+Plug 'slim-template/vim-slim'
 call plug#end()
 
 " --- suan/vim-instant-markdown --- 
