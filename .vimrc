@@ -99,6 +99,13 @@ if &term =~ "xterm"
     cnoremap <special> <Esc>[201~ <nop>
 endif
 
+filetype plugin indent on
+
+if has("autocmd")
+    "sw=softtabstop, sts=shiftwidth, ts=tabstop, et=expandtabの略
+    autocmd filetype yaml setlocal sw=2 sts=2 ts=2 et
+endif
+
 "--------------------
 " 検索系
 "--------------------
