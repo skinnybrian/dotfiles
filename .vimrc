@@ -233,11 +233,22 @@ let g:vim_markdown_folding_disabled = 1
 " メインのキー変更
 let g:user_emmet_leader_key = ','
 let g:user_emmet_settings = {
-    \ 'lang' : 'ja',
-        \ 'php' : {
-            \ 'extends' : 'html'
-        \ }
-    \ }
+\   'variables': {
+\       'lang': 'ja'
+\   },
+\   'html': {
+\       'snippets': {
+\           'html:5': "<!DOCTYPE html>\n"
+\               ."<html lang=\"${lang}\">\n"
+\               ."<head>\n"
+\               ."\t<meta charset=\"${charset}\">\n"
+\               ."\t<title></title>\n"
+\               ."</head>\n"
+\               ."<body>\n\t|\n</body>\n"
+\               ."</html>",
+\       }
+\   }
+\}
 
 " --- airblade/vim-gitgutter ---
 " サインカラムの背景色を無色にする
