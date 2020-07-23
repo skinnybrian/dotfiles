@@ -59,9 +59,9 @@ function fzf-cdr() {
 # alias
 alias zshrc="vim ~/.zshrc"
 alias szsh="source ~/.zshrc"
-
 alias vimrc="vim ~/.vimrc"
-
+alias tmuxc="vim ~/.tmux.conf"
+alias stmux="tmux source ~/.tmux.conf"
 alias gst="git status"
 alias ga="git add"
 alias gaa="git add --all"
