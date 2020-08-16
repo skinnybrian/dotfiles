@@ -149,6 +149,14 @@ command! -bang -nargs=* GGrep
         \ 'git grep --line-number '.shellescape(<q-args>), 0,
         \ { 'dir': systemlist('git rev-parse --show-toplevel')[0] }, <bang>0)
 
+" ripgrep with preview
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always '.shellescape(<q-args>), 1,
+  \   <bang>0 ? fzf#vim#with_preview('up:60%')
+  \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+  \   <bang>0)
+
 " ctags
 let g:fzf_tags_command = 'ctags -R'
 
