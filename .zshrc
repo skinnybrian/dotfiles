@@ -1,6 +1,6 @@
 source ~/.zplug/init.zsh
 
-fpath+=$HOME/.zsh/pure
+fpath+=/opt/homebrew/share/zsh/site-functions
 autoload -U promptinit; promptinit
 prompt pure
 
