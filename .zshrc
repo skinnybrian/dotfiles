@@ -60,6 +60,8 @@ function fzf-cdr() {
 alias zshrc="vim ~/.zshrc"
 alias szsh="source ~/.zshrc"
 alias vimrc="vim ~/.vimrc"
+# TODO: nvim ディレクトリ配下のファイル選択をfzfで制御できるようにする
+alias initlua="nvim ~/.config/nvim/init.lua"
 alias tmuxc="vim ~/.tmux.conf"
 alias stmux="tmux source ~/.tmux.conf"
 alias gst="git status"
