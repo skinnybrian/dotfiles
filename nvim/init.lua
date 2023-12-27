@@ -23,3 +23,8 @@ opt.shiftwidth = 4
 
 -- Keymap
 keymap.set('i', 'jj', '<ESC>', { noremap = true, silent = true})
+
+keymap.set('', '<Up>', '<nop>')
+keymap.set('', '<Down>', '<nop>')
+keymap.set('', '<Left>', '<nop>')
+keymap.set('', '<Right>', '<nop>')
