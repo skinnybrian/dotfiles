@@ -64,6 +64,9 @@ require("lazy").setup({
       -- calling `setup` is optional for customization
       require("fzf-lua").setup({})
     end
+  },
+  {
+    'neoclide/coc.nvim'
   }
 })
 
