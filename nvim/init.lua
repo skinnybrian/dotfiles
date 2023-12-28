@@ -15,7 +15,7 @@ opt.cursorline = true
 opt.shortmess:append({ I = true })
 opt.clipboard:append({ 'unnamedplus' })
 opt.list = true
-opt.listchars = {tab = '»-', trail = '·', eol = '¬', extends = '»', precedes = '«', nbsp = '%'}
+opt.listchars = { tab = '»-', trail = '·', eol = '¬', extends = '»', precedes = '«', nbsp = '%' }
 opt.tabstop = 4
 opt.expandtab = true
 opt.autoindent = true
