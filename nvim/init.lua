@@ -20,6 +20,7 @@ opt.tabstop = 4
 opt.expandtab = true
 opt.autoindent = true
 opt.shiftwidth = 4
+opt.background = 'dark'
 
 -- Keymap
 keymap.set('i', 'jj', '<ESC>', { noremap = true, silent = true})
@@ -41,4 +42,8 @@ if not vim.loop.fs_stat(lazypath) then
   })
 end
 vim.opt.rtp:prepend(lazypath)
-require("lazy").setup(plugins, opts)
+require("lazy").setup({
+  { "ellisonleao/gruvbox.nvim", priority = 1000, config = true, opts = ...}
+})
+
+vim.cmd([[colorscheme gruvbox]])
