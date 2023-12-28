@@ -6,6 +6,9 @@ vim.scriptencoding = 'utf-8'
 opt.encoding = 'utf-8'
 opt.fileencoding = 'utf-8'
 
+-- Software Language
+vim.cmd('language C')
+
 -- Options
 opt.swapfile = false
 opt.backup = false
@@ -67,7 +70,12 @@ require("lazy").setup({
   },
   {
     'neoclide/coc.nvim'
+  },
+  {
+    'rebelot/kanagawa.nvim'
   }
 })
 
-vim.cmd([[colorscheme gruvbox]])
+-- Theme
+vim.cmd('colorscheme gruvbox')
+-- vim.cmd('colorscheme kanagawa')
