@@ -29,7 +29,12 @@ keymap.set('', '<Down>', '<nop>')
 keymap.set('', '<Left>', '<nop>')
 keymap.set('', '<Right>', '<nop>')
 
--- Plugins
+vim.g.mapleader = " "
+vim.keymap.set('n', '<leader>F', "<cmd>lua require('fzf-lua').files()<CR>")
+vim.keymap.set('n', '<leader>b', "<cmd>lua require('fzf-lua').buffers()<CR>")
+vim.keymap.set('n', '<leader>f', "<cmd>lua require('fzf-lua').git_files()<CR>")
+vim.keymap.set('n', '<leader>g', "<cmd>lua require('fzf-lua').live_grep()<CR>")
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
@@ -42,8 +47,24 @@ if not vim.loop.fs_stat(lazypath) then
   })
 end
 vim.opt.rtp:prepend(lazypath)
+
+-- Plugins
 require("lazy").setup({
-  { "ellisonleao/gruvbox.nvim", priority = 1000, config = true, opts = ...}
+  {
+    "ellisonleao/gruvbox.nvim",
+    priority = 1000,
+    config = true,
+    opts = ...
+  },
+  {
+    "ibhagwan/fzf-lua",
+    -- optional for icon support
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      -- calling `setup` is optional for customization
+      require("fzf-lua").setup({})
+    end
+  }
 })
 
 vim.cmd([[colorscheme gruvbox]])
