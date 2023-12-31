@@ -1,3 +1,11 @@
 {
-  "Lua.diagnostics.globals": ["vim"]
+  "Lua.diagnostics.globals": ["vim"],
+  "eslint.autoFixOnSave": true,
+  "eslint.filetypes": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "vue"
+  ]
 }
