@@ -110,7 +110,25 @@ require("lazy").setup({
     opts = {
         -- add any options here
     },
-    lazy = false
+    lazy = false,
+    dependencies = "nvim-treesitter/nvim-treesitter",
+  },
+  {
+    'JoosepAlviste/nvim-ts-context-commentstring'
+  },
+  {
+    'nvim-treesitter/nvim-treesitter',
+    event = {'BufNewFile', 'BufRead'},
+    build = ":TSUpdate",
+    config = function()
+      local configs = require("nvim-treesitter.configs")
+      configs.setup({
+        ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "elixir", "heex", "typescript", "javascript", "tsx", "html", "markdown" },
+        sync_install = false,
+        highlight = { enable = true },
+        indent = { enable = true },
+      })
+    end
   }
 })
 
@@ -200,4 +218,10 @@ require('gitsigns').setup {
   yadm = {
     enable = false
   },
+}
+require('ts_context_commentstring').setup {
+  enable_autocmd = false,
+}
+require('Comment').setup {
+  pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
 }
