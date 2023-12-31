@@ -255,3 +255,4 @@ function _G.show_docs()
     end
 end
 keymap.set("n", "K", '<CMD>lua _G.show_docs()<CR>', {silent = true})
+keymap.set("n", "<leader>\\", '<CMD>NvimTreeToggle<CR>')
