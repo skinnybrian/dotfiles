@@ -20,10 +20,10 @@ opt.shortmess:append({ I = true })
 opt.clipboard:append({ 'unnamed', 'unnamedplus' })
 opt.list = true
 opt.listchars = { tab = '»-', trail = '·', eol = '¬', extends = '»', precedes = '«', nbsp = '%' }
-opt.tabstop = 4
+opt.tabstop = 2
+opt.shiftwidth = 2
 opt.expandtab = true
 opt.autoindent = true
-opt.shiftwidth = 4
 opt.background = 'dark'
 vim.cmd('set nofixeol')
 
