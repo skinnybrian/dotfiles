@@ -133,6 +133,9 @@ require("lazy").setup({
   {
     'phaazon/hop.nvim'
   },
+  {
+    'norcalli/nvim-colorizer.lua'
+  },
 })
 
 -- Theme
@@ -256,3 +259,5 @@ function _G.show_docs()
 end
 keymap.set("n", "K", '<CMD>lua _G.show_docs()<CR>', {silent = true})
 keymap.set("n", "<leader>\\", '<CMD>NvimTreeToggle<CR>')
+
+require('colorizer').setup()
