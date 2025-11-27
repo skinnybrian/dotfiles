@@ -20,8 +20,8 @@ opt.shortmess:append({ I = true })
 opt.clipboard:append({ 'unnamed', 'unnamedplus' })
 opt.list = true
 opt.listchars = { tab = '»-', trail = '·', eol = '¬', extends = '»', precedes = '«', nbsp = '%' }
-opt.tabstop = 2
-opt.shiftwidth = 2
+opt.tabstop = 4
+opt.shiftwidth = 4
 opt.expandtab = true
 opt.autoindent = true
 opt.background = 'dark'
@@ -33,6 +33,7 @@ keymap.set('', '<Up>', '<nop>')
 keymap.set('', '<Down>', '<nop>')
 keymap.set('', '<Left>', '<nop>')
 keymap.set('', '<Right>', '<nop>')
+keymap.set('', 'gd', '<Plug>(coc-definition)', { silent = true })
 
 vim.g.mapleader = " "
 vim.keymap.set('n', '<leader>F', "<cmd>lua require('fzf-lua').files()<CR>")

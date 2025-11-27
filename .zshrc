@@ -35,15 +35,6 @@ zplug "mafredri/zsh-async", from:github
 zplug "sindresorhus/pure", use:pure.zsh, from:github, as:theme
 zplug "zsh-users/zsh-completions"
 
-# anyenv
-eval "$(anyenv init -)"
-
-export PATH="/usr/local/opt/mysql@5.6/bin:$PATH"
-
-# nodenv
-export PATH="$HOME/.nodenv/bin:$PATH"
-eval "$(nodenv init -)"
-
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 # fzf-cdr
@@ -55,6 +46,9 @@ function fzf-cdr() {
         cd $target_dir
     fi
 }
+
+# asdf
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 
 # alias
 alias zshrc="vim ~/.zshrc"
@@ -77,3 +71,5 @@ alias glog="git log --oneline --decorate --graph"
 alias gp="git push"
 alias gl="git pull"
 alias gfa="git fetch --all"
+
+[[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
