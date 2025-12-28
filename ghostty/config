@@ -1,1 +1,22 @@
+# Theme
 theme = Gruvbox Dark Hard
+
+# Font
+font-size = 12
+
+# macOS
+macos-option-as-alt = true
+# macos-titlebar-style = hidden
+# macos-non-native-fullscreen = true
+
+# Window
+initial-window = false
+
+# Quick Terminal
+quick-terminal-position = "bottom"
+quick-terminal-screen = "main"
+quick-terminal-size = "50%"
+quick-terminal-animation-duration = 0
+
+# Hotkeys
+keybind = global:cmd+space=toggle_quick_terminal
