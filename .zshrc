@@ -73,3 +73,6 @@ alias gl="git pull"
 alias gfa="git fetch --all"
 
 [[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
+
+# Claude Code
+export PATH="$HOME/.local/bin:$PATH"
