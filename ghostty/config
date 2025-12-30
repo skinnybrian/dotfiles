@@ -18,5 +18,6 @@ quick-terminal-screen = "main"
 quick-terminal-size = "50%"
 quick-terminal-animation-duration = 0
 
-# Hotkeys
+# Keybinds
 keybind = global:cmd+space=toggle_quick_terminal
+keybind = ctrl+d=text:\x04
