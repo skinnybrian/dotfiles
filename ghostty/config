@@ -10,7 +10,7 @@ macos-option-as-alt = true
 # macos-non-native-fullscreen = true
 
 # Window
-initial-window = false
+# initial-window = false
 
 # Quick Terminal
 quick-terminal-position = "bottom"
