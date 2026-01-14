@@ -76,3 +76,6 @@ alias gfa="git fetch --all"
 
 # Claude Code
 export PATH="$HOME/.local/bin:$PATH"
+
+# mise
+eval "$(mise activate zsh)"
