@@ -22,7 +22,10 @@
       "Bash(sudo *)",
       "Read(.env)",
       "Read(.env.*)",
-      "Read(~/.ssh/*)"
+      "Read(~/.ssh/*)",
+      "Write(.env)",
+      "Write(.env.*)",
+      "Write(~/.ssh/*)"
     ],
     "defaultMode": "plan"
   },
