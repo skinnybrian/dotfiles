@@ -1,12 +1,25 @@
 source ~/.zplug/init.zsh
 
-fpath+=/opt/homebrew/share/zsh/site-functions
+# OS detection
+case "$(uname -s)" in
+    Darwin) _IS_MACOS=1 ;;
+    *)      _IS_MACOS=0 ;;
+esac
+
+if [[ $_IS_MACOS -eq 1 ]]; then
+    fpath+=/opt/homebrew/share/zsh/site-functions
+fi
 autoload -U promptinit; promptinit
 prompt pure
 
 # colors
-export LSCOLORS=Exfxcxdxbxegedabagacad
-alias ls="ls -G"
+if [[ $_IS_MACOS -eq 1 ]]; then
+    export LSCOLORS=Exfxcxdxbxegedabagacad
+    alias ls="ls -G"
+else
+    export LS_COLORS="di=1;34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43"
+    alias ls="ls --color=auto"
+fi
 
 # zstyle
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
@@ -72,7 +85,7 @@ alias gp="git push"
 alias gl="git pull"
 alias gfa="git fetch --all"
 
-[[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
+[[ "$TERM_PROGRAM" == "kiro" ]] && command -v kiro &>/dev/null && . "$(kiro --locate-shell-integration-path zsh)"
 
 # Claude Code
 export PATH="$HOME/.local/bin:$PATH"
