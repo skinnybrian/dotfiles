@@ -18,6 +18,7 @@ sh setup.sh
 | `.tmux.conf` | `~/.tmux.conf` | tmux |
 | `nvim/` | `~/.config/nvim/` | Neovim (Lua設定, lazy.nvim) |
 | `ghostty/` | `~/.config/ghostty/` | Ghostty ターミナル |
+| `zellij/` | `~/.config/zellij/` | Zellij ターミナルマルチプレクサ |
 | `claude/` | `~/.claude/` | Claude Code (CLAUDE.md, settings, commands, agents) |
 
 ## デザイン方針
