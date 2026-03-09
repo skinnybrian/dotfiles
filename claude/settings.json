@@ -1,7 +1,6 @@
 {
   "permissions": {
     "allow": [
-      "mcp__pencil",
       "WebSearch",
       "WebFetch",
       "Read",
@@ -13,7 +12,8 @@
       "Bash(git diff *)",
       "Bash(git log *)",
       "Bash(* --version)",
-      "Bash(* --help *)"
+      "Bash(* --help *)",
+      "mcp__pencil"
     ],
     "deny": [
       "Bash(rm -rf *)",
