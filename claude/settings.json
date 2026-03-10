@@ -39,10 +39,33 @@
     ],
     "defaultMode": "plan"
   },
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/brian/.claude/hooks/discord-notify.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/brian/.claude/hooks/discord-notify.sh"
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
     "type": "command",
     "command": "sh ~/.claude/statusline-command.sh"
   },
-  "language": "日本語",
-  "model": "sonnet"
+  "language": "日本語"
 }
