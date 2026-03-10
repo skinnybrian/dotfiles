@@ -11,8 +11,18 @@
       "Bash(git status *)",
       "Bash(git diff *)",
       "Bash(git log *)",
+      "Bash(git init)",
+      "Bash(git add *)",
+      "Bash(git branch *)",
+      "Bash(git fetch *)",
       "Bash(* --version)",
       "Bash(* --help *)",
+      "Bash(ls *)",
+      "Bash(mkdir -p *)",
+      "Bash(chmod +x *)",
+      "Bash(jq *)",
+      "Bash(command -v *)",
+      "Bash(gibo dump *)",
       "mcp__pencil"
     ],
     "deny": [
@@ -33,5 +43,6 @@
     "type": "command",
     "command": "sh ~/.claude/statusline-command.sh"
   },
-  "language": "日本語"
+  "language": "日本語",
+  "model": "sonnet"
 }
