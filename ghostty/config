@@ -3,6 +3,7 @@ theme = Gruvbox Dark Hard
 
 # Font
 font-size = 12
+font-codepoint-map = U+3000-U+30FF,U+4E00-U+9FFF,U+FF00-U+FFEF=BIZ UDGothic
 
 # macOS
 macos-option-as-alt = true
