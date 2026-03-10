@@ -5,6 +5,13 @@ model=$(echo "$input" | jq -r '.model.display_name // empty')
 used=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
 total_in=$(echo "$input" | jq -r '.context_window.total_input_tokens // empty')
 total_out=$(echo "$input" | jq -r '.context_window.total_output_tokens // empty')
+transcript=$(echo "$input" | jq -r '.transcript_path // empty')
+
+# Session slug from transcript JSONL
+session_slug=""
+if [ -n "$transcript" ] && [ -f "$transcript" ]; then
+  session_slug=$(head -5 "$transcript" | jq -r 'select(.slug) | .slug // empty' 2>/dev/null | head -1)
+fi
 
 # Shorten home directory to ~
 home="$HOME"
@@ -19,8 +26,12 @@ fi
 # Build the status line
 line=""
 
-# Line 1: Directory
-line="${short_cwd}"
+# Line 1: Directory + Session slug
+if [ -n "$session_slug" ]; then
+  line="${short_cwd}  🔆 ${session_slug}"
+else
+  line="${short_cwd}"
+fi
 
 # Line 2: Git branch, model, progress bar, tokens
 line2=""
