@@ -13,9 +13,8 @@ if [ -n "$transcript" ] && [ -f "$transcript" ]; then
   session_slug=$(head -5 "$transcript" | jq -r 'select(.slug) | .slug // empty' 2>/dev/null | head -1)
 fi
 
-# Shorten home directory to ~
-home="$HOME"
-short_cwd=$(echo "$cwd" | sed "s|^$home|~|")
+# Show only the directory name (basename) with folder icon
+short_cwd=" $(basename "$cwd")"
 
 # Git branch (skip optional locks)
 branch=""
@@ -33,14 +32,13 @@ else
   line="${short_cwd}"
 fi
 
-# Line 2: Git branch, model, progress bar, tokens
+# Line 2: Git branch + model
 line2=""
 
 if [ -n "$branch" ]; then
   line2="${branch}"
 fi
 
-# Model and context usage with progress bar
 if [ -n "$model" ]; then
   if [ -n "$line2" ]; then
     line2="${line2}  ${model}"
@@ -48,6 +46,9 @@ if [ -n "$model" ]; then
     line2="${model}"
   fi
 fi
+
+# Line 3: Context progress bar + tokens
+line3=""
 
 if [ -n "$used" ]; then
   used_int=$(printf "%.0f" "$used")
@@ -65,7 +66,7 @@ if [ -n "$used" ]; then
     bar="${bar}░"
     i=$(( i + 1 ))
   done
-  line2="${line2}  [${bar}] ${used_int}%"
+  line3="[${bar}] ${used_int}%"
 fi
 
 # Session token usage
@@ -78,12 +79,20 @@ if [ -n "$total_in" ] && [ -n "$total_out" ]; then
   else
     tok="${total}"
   fi
-  line2="${line2}  tokens:${tok}"
+  if [ -n "$line3" ]; then
+    line3="${line3}  tokens:${tok}"
+  else
+    line3="tokens:${tok}"
+  fi
 fi
 
 # Combine lines
-if [ -n "$line2" ]; then
+if [ -n "$line2" ] && [ -n "$line3" ]; then
+  printf "%s\n%s\n%s" "$line" "$line2" "$line3"
+elif [ -n "$line2" ]; then
   printf "%s\n%s" "$line" "$line2"
+elif [ -n "$line3" ]; then
+  printf "%s\n%s" "$line" "$line3"
 else
   printf "%s" "$line"
 fi

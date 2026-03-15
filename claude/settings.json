@@ -8,21 +8,37 @@
       "Write",
       "Glob",
       "Grep",
-      "Bash(git status *)",
-      "Bash(git diff *)",
-      "Bash(git log *)",
-      "Bash(git init)",
-      "Bash(git add *)",
-      "Bash(git branch *)",
-      "Bash(git fetch *)",
-      "Bash(* --version)",
-      "Bash(* --help *)",
+      "Bash(git *)",
+      "Bash(gh *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(bun *)",
+      "Bash(bunx *)",
+      "Bash(node *)",
+      "Bash(python *)",
+      "Bash(python3 *)",
+      "Bash(pip *)",
+      "Bash(pip3 *)",
+      "Bash(docker *)",
+      "Bash(docker compose *)",
       "Bash(ls *)",
       "Bash(mkdir -p *)",
       "Bash(chmod +x *)",
       "Bash(jq *)",
       "Bash(command -v *)",
       "Bash(gibo dump *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(which *)",
+      "Bash(echo *)",
+      "Bash(pwd)",
+      "Bash(env *)",
+      "Bash(date *)",
+      "Bash(curl *)",
+      "Bash(* --version)",
+      "Bash(* --help *)",
       "mcp__pencil"
     ],
     "deny": [
@@ -61,11 +77,27 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -q 'CLAUDE.md'; then echo '⚠ CLAUDE.mdが変更されました。`/claude-md-management:claude-md-improver` で監査を実行してください。' >&2; fi"
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
     "type": "command",
     "command": "sh ~/.claude/statusline-command.sh"
   },
-  "language": "日本語"
+  "enabledPlugins": {
+    "claude-md-management@claude-plugins-official": true
+  },
+  "language": "日本語",
+  "skipAutoPermissionPrompt": true,
+  "model": "sonnet"
 }
