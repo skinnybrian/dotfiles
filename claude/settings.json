@@ -62,7 +62,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/brian/.claude/hooks/discord-notify.sh"
+            "command": "~/.claude/hooks/discord-notify.sh"
           }
         ]
       }
@@ -73,7 +73,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/brian/.claude/hooks/discord-notify.sh"
+            "command": "~/.claude/hooks/discord-notify.sh"
           }
         ]
       }
