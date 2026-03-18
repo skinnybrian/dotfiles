@@ -98,6 +98,5 @@
     "claude-md-management@claude-plugins-official": true
   },
   "language": "日本語",
-  "skipAutoPermissionPrompt": true,
-  "model": "sonnet"
+  "skipAutoPermissionPrompt": true
 }
