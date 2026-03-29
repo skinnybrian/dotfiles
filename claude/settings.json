@@ -39,6 +39,7 @@
       "Bash(curl *)",
       "Bash(* --version)",
       "Bash(* --help *)",
+      "Bash(open *)",
       "mcp__pencil"
     ],
     "deny": [
@@ -74,6 +75,17 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/discord-notify.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/chrome-open.sh"
           }
         ]
       }
