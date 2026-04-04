@@ -72,7 +72,9 @@ require("lazy").setup({
     end
   },
   {
-    'neoclide/coc.nvim'
+    'neoclide/coc.nvim',
+    branch = 'release',
+    build = 'npm ci',
   },
   {
     'rebelot/kanagawa.nvim'
@@ -122,12 +124,11 @@ require("lazy").setup({
     event = {'BufNewFile', 'BufRead'},
     build = ":TSUpdate",
     config = function()
-      local configs = require("nvim-treesitter.configs")
-      configs.setup({
-        ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "elixir", "heex", "typescript", "javascript", "tsx", "html", "markdown" },
-        sync_install = false,
-        highlight = { enable = true },
-        indent = { enable = true },
+      require("nvim-treesitter").setup()
+      vim.api.nvim_create_autocmd("FileType", {
+        callback = function()
+          pcall(vim.treesitter.start)
+        end,
       })
     end
   },
