@@ -40,7 +40,9 @@
       "Bash(* --version)",
       "Bash(* --help *)",
       "Bash(open *)",
-      "mcp__pencil"
+      "mcp__pencil",
+      "mcp__mcp-obsidian",
+      "mcp__notionApi"
     ],
     "deny": [
       "Bash(rm -rf *)",
@@ -97,6 +99,17 @@
           {
             "type": "command",
             "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -q 'CLAUDE.md'; then echo '⚠ CLAUDE.mdが変更されました。`/claude-md-management:claude-md-improver` で監査を実行してください。' >&2; fi"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/research-save-suggest.sh"
           }
         ]
       }
