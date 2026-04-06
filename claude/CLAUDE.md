@@ -21,3 +21,23 @@
 作業が一区切りついたタイミングで `/commit` を案内する。断られたらそれ以上勧めない。
 
 publicリポジトリの場合、コミット前にシークレット（APIキー、トークン、Webhook URL、個人情報等）が含まれていないか精査し、問題があれば警告する。
+
+## ファイル構成
+
+- `settings.json`、`commands/`、`agents/` は `~/dotfiles/claude/` からの symlink
+- hooks は `~/.claude/hooks/` に配置（discord-notify.sh, research-save-suggest.sh 等）
+
+## カスタムコマンド
+
+- `/save-research` — 調査結果をNotion/Obsidianに保存
+- `/research-best-practices` — 3並列Agentでベストプラクティス調査
+- `/research` — トピックやGitHub issue調査
+- `/consult` — 専門家ペルソナで分析
+- `/learn` — セッションの学びをCLAUDE.mdに記録
+
+## MCP サーバー
+
+- Obsidian Local REST API はデフォルト HTTPS。`mcp-obsidian` には `OBSIDIAN_PROTOCOL=https` が必要
+- Notion API v2025-09-03 では `database` ID と `data_source` ID が別物。ページ作成には `database` ID を使う
+- MCP 設定: `~/.claude/.mcp.json`（シークレット含むため git 管理外）
+- Obsidian MCP は Obsidian が起動していないと接続不可
