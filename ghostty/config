@@ -6,7 +6,7 @@ font-size = 12
 font-codepoint-map = U+3000-U+30FF,U+4E00-U+9FFF,U+FF00-U+FFEF=BIZ UDGothic
 
 # macOS
-macos-option-as-alt = true
+macos-option-as-alt = left
 # macos-titlebar-style = hidden
 # macos-non-native-fullscreen = true
 
@@ -22,3 +22,11 @@ quick-terminal-animation-duration = 0
 # Keybinds
 keybind = global:cmd+space=toggle_quick_terminal
 keybind = ctrl+d=text:\x04
+
+# Zellij の Alt h/j/k/l と衝突する Ghostty 既定の単語ジャンプを解除
+keybind = alt+left=unbind
+keybind = alt+right=unbind
+
+# Ctrl+h を ASCII BS(0x08) ではなく CSI u 形式で送信し、tmux/nvim で
+# Backspace と区別できるようにする (smart-splits.nvim 連携用)
+keybind = ctrl+h=csi:104;5u
