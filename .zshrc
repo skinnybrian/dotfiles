@@ -47,9 +47,6 @@ function fzf-cdr() {
     fi
 }
 
-# asdf
-export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
-
 # alias
 alias zshrc="vim ~/.zshrc"
 alias szsh="source ~/.zshrc"
