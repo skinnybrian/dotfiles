@@ -75,6 +75,7 @@ alias gfa="git fetch --all"
 export PATH="$HOME/.local/bin:$PATH"
 
 # mise
+export PATH="$HOME/.local/share/mise/shims:$PATH"
 eval "$(mise activate zsh)"
 # The following lines have been added by Docker Desktop to enable Docker CLI completions.
 fpath=(/Users/brian/.docker/completions $fpath)
