@@ -19,6 +19,7 @@ sh setup.sh
 | `nvim/` | `~/.config/nvim/` | Neovim (Lua設定, lazy.nvim) |
 | `ghostty/` | `~/.config/ghostty/` | Ghostty ターミナル |
 | `zellij/` | `~/.config/zellij/` | Zellij（バックアップとして残置、日常使用は tmux） |
+| `.uim` | `~/.uim` | uim (日本語入力) |
 | `claude/` | `~/.claude/` | Claude Code (CLAUDE.md, settings, commands, agents) |
 
 ## デザイン方針
