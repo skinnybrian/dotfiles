@@ -66,6 +66,10 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/discord-notify.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/tmux-bell.sh"
           }
         ]
       }
@@ -77,6 +81,10 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/discord-notify.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/tmux-bell.sh"
           }
         ]
       }
