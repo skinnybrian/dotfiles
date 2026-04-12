@@ -1,8 +1,24 @@
+# uim-fep がある環境 (= Android Linux / AVF Debian) でのみログインシェルをラップ。
+# tmux 内と uim-fep 内からの再入はガードする。
+if [[ -z "$UIM_FEP_STARTED" ]] && [[ -z "$TMUX" ]] && command -v uim-fep >/dev/null 2>&1; then
+  export UIM_FEP_STARTED=1
+  exec uim-fep
+fi
+
+# ---- zplug ----
 source ~/.zplug/init.zsh
 
-fpath+=/opt/homebrew/share/zsh/site-functions
-autoload -U promptinit; promptinit
-prompt pure
+zplug "zplug/zplug", hook-build:"zplug --self-manage"
+zplug "mafredri/zsh-async", from:github
+zplug "sindresorhus/pure", use:pure.zsh, from:github, as:theme
+zplug "zsh-users/zsh-completions"
+
+# 未インストールがあれば自動で入れる
+if ! zplug check --verbose; then
+  zplug install
+fi
+
+zplug load
 
 # colors
 export LSCOLORS=Exfxcxdxbxegedabagacad
@@ -28,12 +44,6 @@ zle -N history-beginning-search-backward-end history-search-end
 zle -N history-beginning-search-forward-end history-search-end
 bindkey "^P" history-beginning-search-backward-end
 bindkey "^N" history-beginning-search-forward-end
-
-# zplug
-zplug "zplug/zplug", hook-build:"zplug --self-manage"
-zplug "mafredri/zsh-async", from:github
-zplug "sindresorhus/pure", use:pure.zsh, from:github, as:theme
-zplug "zsh-users/zsh-completions"
 
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
