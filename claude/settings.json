@@ -123,5 +123,6 @@
     "claude-md-management@claude-plugins-official": true
   },
   "language": "日本語",
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "effortLevel": "high"
 }
