@@ -1,4 +1,7 @@
 ;;;; ~/.uim
+;; Android Linux (AVF Debian) 向け uim-fep + uim-mozc 設定
+;; トグルキーは Ctrl+_（Ctrl+Space / Alt+j は AVF 実機で動作しなかったため）
+;; 注意: Ctrl+_ は readline の undo と衝突するが uim-fep 起動中は横取りされる
 (define default-im-name 'mozc)
 (define-key generic-on-key? '("<Control>_"))
 (define-key generic-off-key? '("<Control>_"))

@@ -19,7 +19,7 @@ sh setup.sh
 | `nvim/` | `~/.config/nvim/` | Neovim (Lua設定, lazy.nvim) |
 | `ghostty/` | `~/.config/ghostty/` | Ghostty ターミナル |
 | `zellij/` | `~/.config/zellij/` | Zellij（バックアップとして残置、日常使用は tmux） |
-| `.uim` | `~/.uim` | uim (日本語入力) |
+| `.uim` | `~/.uim` | uim（日本語入力、Android Linux 用） |
 | `claude/` | `~/.claude/` | Claude Code (CLAUDE.md, settings, commands, agents) |
 
 ## デザイン方針
@@ -35,6 +35,19 @@ sh setup.sh
 - `settings.local.json`（シークレット情報）は `~/.claude/` に直接配置する。リポジトリには含めない
 - hookスクリプト（`~/.claude/hooks/`）はリポジトリ管理外。変更はコミットに含まれない
 
+## Android Linux (AVF Debian) セットアップ
+
+Pixel の Linux Terminal（Android Virtualization Framework 上の Debian VM）で日本語入力を有効化する手順。`setup.sh` では自動化していない（apt / locale 周りは環境依存のため手動推奨）。
+
+```sh
+sudo apt install locales
+sudo sed -i 's/# ja_JP.UTF-8 UTF-8/ja_JP.UTF-8 UTF-8/' /etc/locale.gen
+sudo locale-gen
+sudo apt install uim-fep uim-mozc
+sh ~/dotfiles/setup.sh   # ~/.uim の symlink を張る
+uim-fep                  # 起動後 Ctrl+_ で IME トグル
+```
+
 ## キー入力に関する制約・知見
 
 - **Karabiner-Elements** で `Ctrl-p/n/b/f` が矢印キー（Emacs風カーソル移動）に変換されている。multiplexer の prefix や bind に使うと届かないので避ける
@@ -45,3 +58,5 @@ sh setup.sh
   2. **tmux**: `set -s extended-keys on` + `set -as terminal-features 'xterm*:extkeys'` で受信側を有効化
   3. **Neovim**: `<C-h>` バインドに加えて `<BS>` も同じ smart-splits 関数に紐付け（フォールバック）
 - **Neovim ↔ tmux ペイン移動**: `mrjones2014/smart-splits.nvim` + tmux の vim 検出パススルー (`is_vim` シェルチェック) で実現。Zellij の `swaits/zellij-nav.nvim` 構成より安定
+- **Ctrl+_ = uim-fep トグル**（Android Linux / AVF Debian）: `Ctrl+Space` / `Alt+j` が AVF 実機で動作しなかったための選択。`Ctrl+_` は bash/zsh readline の undo と衝突するが、uim-fep 起動中はキーを横取りするため実害なし。uim-fep 未起動のシェルでは Ctrl+_ が undo として効く点に注意
+- **Android Linux Terminal の貼り付け**: Ctrl+V は readline の `quoted-insert` に取られているため効かない。**`Ctrl+Shift+V`** が OS クリップボード貼り付け（xterm 系の慣習）。`Shift+Insert` / 長押し Paste も利用可
