@@ -178,6 +178,14 @@ set autoread
 " Vim-Plug
 "--------------------
 
+" vim-plug 自動インストール
+let s:plug_path = expand('~/.vim/autoload/plug.vim')
+if empty(glob(s:plug_path))
+  silent execute '!curl -fLo ' . s:plug_path . ' --create-dirs '
+    \ . 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
 call plug#begin()
 " Status Bar
 Plug 'vim-airline/vim-airline'
@@ -298,8 +306,8 @@ autocmd FileType vue syntax sync fromstart
 " Vim Theme Settings
 "--------------------
 
-" カラースキーム設定
-colorscheme gruvbox
+" カラースキーム設定 (初回起動時は未インストールなので silent! でエラー抑制)
+silent! colorscheme gruvbox
 
 " gruvbox Settings
 set background=dark
