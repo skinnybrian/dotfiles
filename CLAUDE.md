@@ -52,7 +52,7 @@ uim-fep                  # 起動後 Ctrl+_ で IME トグル
 
 - **Karabiner-Elements** で `Ctrl-p/n/b/f` が矢印キー（Emacs風カーソル移動）に変換されている。multiplexer の prefix や bind に使うと届かないので避ける
 - **Ctrl+Space は Raycast に占有**されているので multiplexer の prefix にできない
-- **tmux prefix は `Alt+Space`** を採用（Karabiner / Raycast / Emacs 風キーバインドと衝突しない）
+- **tmux prefix は `Ctrl+a`** を採用（Screen 由来の定番リバインド）。bash/zsh の行頭移動(`C-a`)と衝突するが、`bind C-a send-prefix` により `C-a` 2連打で生の `C-a` をペインに送信でき、行頭移動も使える
 - **Ctrl+H = ASCII Backspace (0x08)** 問題: Ctrl-h はターミナルで物理的に Backspace と同じバイトを送信する。tmux + Neovim 統合で Ctrl-h を pane 移動に使うには3層対応が必要：
   1. **Ghostty**: `keybind = ctrl+h=csi:104;5u` で CSI u シーケンス送信
   2. **tmux**: `set -s extended-keys on` + `set -as terminal-features 'xterm*:extkeys'` で受信側を有効化
