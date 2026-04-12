@@ -1,0 +1,4 @@
+;;;; ~/.uim
+(define default-im-name 'mozc)
+(define-key generic-on-key? '("<Control>_"))
+(define-key generic-off-key? '("<Control>_"))

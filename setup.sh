@@ -4,6 +4,7 @@ mkdir -p ~/.config
 ln -sf ~/dotfiles/.tmux.conf ~/.tmux.conf
 ln -sf ~/dotfiles/.vimrc ~/.vimrc
 ln -sf ~/dotfiles/.zshrc ~/.zshrc
+ln -sf ~/dotfiles/.uim ~/.uim
 ln -sfn ~/dotfiles/nvim ~/.config/nvim
 ln -sfn ~/dotfiles/ghostty ~/.config/ghostty
 ln -sfn ~/dotfiles/zellij ~/.config/zellij
