@@ -1,9 +1,11 @@
 ---
+name: commit
 description: 変更をコミットする
-argument-hint: [コミットメッセージ（省略可）]
+disable-model-invocation: true
+allowed-tools: Read, Bash, Glob, Grep
 ---
 
-# Commit コマンド
+# Commit
 
 引数: $ARGUMENTS
 
