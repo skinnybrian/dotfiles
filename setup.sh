@@ -18,3 +18,9 @@ ln -sf ~/dotfiles/claude/statusline.py ~/.claude/statusline.py
 ln -sfn ~/dotfiles/claude/commands ~/.claude/commands
 ln -sfn ~/dotfiles/claude/agents ~/.claude/agents
 ln -sfn ~/dotfiles/claude/skills ~/.claude/skills
+
+# Claude Code hooks（スクリプトのみ個別 symlink。.env やログは環境固有のため ~/.claude/hooks/ に直接配置）
+mkdir -p ~/.claude/hooks
+ln -sf ~/dotfiles/claude/hooks/chrome-open.sh ~/.claude/hooks/chrome-open.sh
+ln -sf ~/dotfiles/claude/hooks/discord-notify.sh ~/.claude/hooks/discord-notify.sh
+ln -sf ~/dotfiles/claude/hooks/research-save-suggest.sh ~/.claude/hooks/research-save-suggest.sh
