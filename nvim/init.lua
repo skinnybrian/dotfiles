@@ -153,6 +153,12 @@ require("lazy").setup({
       vim.keymap.set('n', '<A-l>', require('smart-splits').resize_right,      { silent = true })
     end,
   },
+  {
+    'MeanderingProgrammer/render-markdown.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
+    ft = { 'markdown' },
+    opts = {},
+  },
 })
 
 -- Theme
