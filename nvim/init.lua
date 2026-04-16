@@ -38,7 +38,7 @@ keymap.set('', 'gd', '<Plug>(coc-definition)', { silent = true })
 vim.g.mapleader = " "
 vim.keymap.set('n', '<leader>F', "<cmd>lua require('fzf-lua').files()<CR>")
 vim.keymap.set('n', '<leader>b', "<cmd>lua require('fzf-lua').buffers()<CR>")
-vim.keymap.set('n', '<leader>f', "<cmd>lua require('fzf-lua').git_files()<CR>")
+vim.keymap.set('n', '<leader>f', "<cmd>lua require('fzf-lua').git_files({ cmd = 'git ls-files --exclude-standard --cached --others' })<CR>")
 vim.keymap.set('n', '<leader>g', "<cmd>lua require('fzf-lua').live_grep()<CR>")
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
