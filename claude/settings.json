@@ -56,7 +56,7 @@
       "Write(.env.*)",
       "Write(~/.ssh/*)"
     ],
-    "defaultMode": "plan"
+    "defaultMode": "auto"
   },
   "hooks": {
     "Notification": [
@@ -66,10 +66,6 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/discord-notify.sh"
-          },
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/tmux-bell.sh"
           }
         ]
       }
@@ -81,10 +77,6 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/discord-notify.sh"
-          },
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/tmux-bell.sh"
           }
         ]
       }
@@ -131,5 +123,6 @@
     "claude-md-management@claude-plugins-official": true
   },
   "language": "日本語",
-  "effortLevel": "high"
+  "effortLevel": "xhigh",
+  "skipAutoPermissionPrompt": true
 }
