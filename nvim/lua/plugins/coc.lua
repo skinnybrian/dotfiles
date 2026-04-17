@@ -11,10 +11,13 @@ return {
       local cw = vim.fn.expand("<cword>")
       if vim.fn.index({ "vim", "help" }, vim.bo.filetype) >= 0 then
         vim.cmd.help(cw)
-      elseif vim.api.nvim_eval("coc#rpc#ready()") then
+        return
+      end
+      local ok, ready = pcall(vim.api.nvim_eval, "coc#rpc#ready()")
+      if ok and ready == 1 then
         vim.fn.CocActionAsync("doHover")
       else
-        vim.cmd("!" .. vim.o.keywordprg .. " " .. cw)
+        vim.cmd("!" .. vim.o.keywordprg .. " " .. vim.fn.shellescape(cw))
       end
     end
 

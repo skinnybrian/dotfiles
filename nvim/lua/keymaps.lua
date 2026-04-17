@@ -1,3 +1,4 @@
+-- mapleader must be set before lazy.nvim loads (it captures <leader> mappings)
 vim.g.mapleader = " "
 
 local set = vim.keymap.set

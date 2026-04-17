@@ -2,7 +2,7 @@ return {
   "ibhagwan/fzf-lua",
   dependencies = { "nvim-tree/nvim-web-devicons" },
   keys = {
-    { "<leader>F", function() require("fzf-lua").files() end, desc = "Files (all)" },
+    { "<leader>F", function() require("fzf-lua").files() end, desc = "Find files (fs)" },
     { "<leader>b", function() require("fzf-lua").buffers() end, desc = "Buffers" },
     {
       "<leader>f",
@@ -11,7 +11,7 @@ return {
           cmd = "git ls-files --exclude-standard --cached --others --deduplicate",
         })
       end,
-      desc = "Git files",
+      desc = "Git files (incl. untracked)",
     },
     { "<leader>g", function() require("fzf-lua").live_grep() end, desc = "Live grep" },
   },

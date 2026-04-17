@@ -11,5 +11,12 @@ return {
       changedelete = { text = "~" },
       untracked    = { text = "┆" },
     },
+    preview_config = {
+      border   = "single",
+      style    = "minimal",
+      relative = "cursor",
+      row      = 0,
+      col      = 1,
+    },
   },
 }
