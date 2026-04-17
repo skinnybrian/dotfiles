@@ -1,6 +1,7 @@
 return {
   "neoclide/coc.nvim",
   branch = "release",
+  event = "VeryLazy",
   config = function()
     local set = vim.keymap.set
 
