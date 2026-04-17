@@ -21,7 +21,6 @@ quick-terminal-animation-duration = 0
 
 # Keybinds
 keybind = global:cmd+space=toggle_quick_terminal
-keybind = ctrl+d=text:\x04
 
 # Zellij の Alt h/j/k/l と衝突する Ghostty 既定の単語ジャンプを解除
 keybind = alt+left=unbind
