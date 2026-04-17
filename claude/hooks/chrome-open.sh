@@ -6,7 +6,7 @@ INPUT=$(cat)
 COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
 
 # openコマンドかチェック（パイプやセミコロンの後のopenも検知）
-if echo "$COMMAND" | grep -qE '(^|;|&&|\|\|)\s*open\s'; then
+if echo "$COMMAND" | grep -qE '(^|[;&|])[[:space:]]*open[[:space:]]'; then
   # -a "Google Chrome" が含まれているかチェック
   if ! echo "$COMMAND" | grep -q 'Google Chrome'; then
     jq -n '{

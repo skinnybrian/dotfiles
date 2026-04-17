@@ -10,8 +10,14 @@ if [ -f "$ENV_FILE" ]; then
   source "$ENV_FILE"
 fi
 
-# デバッグログ
+# デバッグログ（1MB 超えたら .old にローテーション）
 DEBUG_LOG="$HOME/.claude/hooks/discord-debug.log"
+if [ -f "$DEBUG_LOG" ]; then
+  LOG_SIZE=$(stat -f%z "$DEBUG_LOG" 2>/dev/null || stat -c%s "$DEBUG_LOG" 2>/dev/null || echo 0)
+  if [ "$LOG_SIZE" -gt 1048576 ]; then
+    mv "$DEBUG_LOG" "$DEBUG_LOG.old"
+  fi
+fi
 echo "$(date): hook called, event=$(echo "$INPUT" | jq -r '.hook_event_name'), WEBHOOK_URL_SET=$([ -n "$DISCORD_WEBHOOK_URL" ] && echo 'yes' || echo 'no')" >> "$DEBUG_LOG"
 
 # 共通フィールド取得
@@ -30,7 +36,8 @@ if [ "$EVENT" = "Stop" ]; then
   TITLE="✅ タスクが完了しました"
   LAST_MSG=$(echo "$INPUT" | jq -r '.last_assistant_message // ""')
   if [ -n "$LAST_MSG" ]; then
-    DESCRIPTION=$(printf "プロジェクト: **%s**\n> %.50s..." "${PROJECT:-Unknown}" "$LAST_MSG")
+    LAST_MSG_TRUNC="${LAST_MSG:0:50}"
+    DESCRIPTION=$(printf "プロジェクト: **%s**\n> %s..." "${PROJECT:-Unknown}" "$LAST_MSG_TRUNC")
   else
     DESCRIPTION=$(printf "プロジェクト: **%s**\n作業ディレクトリ: \`%s\`" "${PROJECT:-Unknown}" "$CWD")
   fi
@@ -40,7 +47,8 @@ elif [ "$EVENT" = "Notification" ]; then
   COLOR=16776960  # 黄/ゴールド
   TITLE="⚠️ Claude Code が入力を待っています"
   if [ -n "$MSG" ]; then
-    DESCRIPTION=$(printf "プロジェクト: **%s**\n> %.50s" "${PROJECT:-Unknown}" "$MSG")
+    MSG_TRUNC="${MSG:0:50}"
+    DESCRIPTION=$(printf "プロジェクト: **%s**\n> %s" "${PROJECT:-Unknown}" "$MSG_TRUNC")
   else
     DESCRIPTION=$(printf "プロジェクト: **%s**\nタイプ: \`%s\`" "${PROJECT:-Unknown}" "$NOTIF_TYPE")
   fi

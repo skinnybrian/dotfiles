@@ -8,12 +8,7 @@ INPUT=$(cat)
 LAST_MSG=$(echo "$INPUT" | jq -r '.last_assistant_message // ""')
 
 # 調査結果のシグナルを検出（複数のキーワードが含まれている場合のみ）
-MATCH_COUNT=0
-for keyword in "調査" "ベストプラクティス" "推奨" "比較" "メリット" "デメリット" "参考" "Sources" "research" "best practices" "survey" "findings"; do
-  if echo "$LAST_MSG" | grep -qi "$keyword"; then
-    MATCH_COUNT=$((MATCH_COUNT + 1))
-  fi
-done
+MATCH_COUNT=$(echo "$LAST_MSG" | grep -oiE '調査|ベストプラクティス|推奨|比較|メリット|デメリット|参考|Sources|research|best practices|survey|findings' | sort -fu | wc -l | tr -d ' ')
 
 # 3つ以上のキーワードがマッチした場合のみ提案（誤検出防止）
 if [ "$MATCH_COUNT" -ge 3 ]; then
