@@ -83,6 +83,11 @@ alias gfa="git fetch --all"
 
 # Claude Code
 export PATH="$HOME/.local/bin:$PATH"
+alias c='claude'
+alias ccon='claude --continue'
+alias cr='claude --resume'
+alias cw='claude --worktree'
+alias cwt='claude --worktree --tmux'
 
 # mise
 export PATH="$HOME/.local/share/mise/shims:$PATH"
