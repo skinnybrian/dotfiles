@@ -23,6 +23,8 @@
 
 publicリポジトリの場合、コミット前にシークレット（APIキー、トークン、Webhook URL、個人情報等）が含まれていないか精査し、問題があれば警告する。
 
+リポジトリの公開状態は前提せず、`gh repo view --json visibility` で確認してから判断する。
+
 ## ファイル構成
 
 - `settings.json`、`statusline-command.sh`、`statusline.py`、`skills/`、`commands/`、`agents/` は `~/dotfiles/claude/` からの symlink
