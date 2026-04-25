@@ -1,4 +1,12 @@
 {
+  "env": {
+    "CLAUDE_CODE_EFFORT_LEVEL": "max",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "DISABLE_TELEMETRY": "1",
+    "DISABLE_ERROR_REPORTING": "1",
+    "DISABLE_FEEDBACK_COMMAND": "1",
+    "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1"
+  },
   "permissions": {
     "allow": [
       "WebSearch",
@@ -120,9 +128,12 @@
     "command": "~/.claude/statusline.py"
   },
   "enabledPlugins": {
-    "claude-md-management@claude-plugins-official": true
+    "claude-md-management@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true
   },
   "language": "日本語",
-  "effortLevel": "xhigh",
-  "skipAutoPermissionPrompt": true
+  "feedbackSurveyRate": 0,
+  "skipAutoPermissionPrompt": true,
+  "editorMode": "vim",
+  "agentPushNotifEnabled": true
 }
