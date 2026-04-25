@@ -49,3 +49,6 @@ Sessionx.vim
 tags
 # Persistent undo
 [._]*.un~
+
+# Claude Code (project-local settings.local.json + worktrees, not for sharing)
+.claude/
