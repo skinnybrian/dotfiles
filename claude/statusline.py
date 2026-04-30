@@ -59,6 +59,7 @@ def format_tokens(total):
 # --- Data extraction ---
 cwd = data.get('workspace', {}).get('current_dir') or data.get('cwd', '')
 model = data.get('model', {}).get('display_name', '')
+effort = os.environ.get('CLAUDE_CODE_EFFORT_LEVEL', '')
 ctx_pct = data.get('context_window', {}).get('used_percentage')
 total_in = data.get('context_window', {}).get('total_input_tokens')
 total_out = data.get('context_window', {}).get('total_output_tokens')
@@ -111,12 +112,15 @@ line1 = short_cwd
 if session_slug:
     line1 += f'  \U0001f506 {session_slug}'
 
-# --- Line 2: Git branch + Model ---
+# --- Line 2: Git branch + Model + Effort ---
 parts2 = []
 if branch:
     parts2.append(branch)
 if model:
-    parts2.append(model)
+    model_str = model
+    if effort:
+        model_str += f'  [{effort}]'
+    parts2.append(model_str)
 line2 = '  '.join(parts2)
 
 # --- Line 3: Context bar + tokens | 5h bar | 7d bar ---

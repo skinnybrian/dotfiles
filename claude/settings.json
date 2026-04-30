@@ -1,6 +1,6 @@
 {
   "env": {
-    "CLAUDE_CODE_EFFORT_LEVEL": "max",
+    "CLAUDE_CODE_EFFORT_LEVEL": "xhigh",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
     "DISABLE_TELEMETRY": "1",
     "DISABLE_ERROR_REPORTING": "1",
@@ -133,6 +133,7 @@
   },
   "language": "日本語",
   "feedbackSurveyRate": 0,
+  "effortLevel": "xhigh",
   "skipAutoPermissionPrompt": true,
   "editorMode": "vim",
   "agentPushNotifEnabled": true
