@@ -20,6 +20,7 @@ sh setup.sh
 | `ghostty/` | `~/.config/ghostty/` | Ghostty ターミナル |
 | `zellij/` | `~/.config/zellij/` | Zellij（バックアップとして残置、日常使用は tmux） |
 | `.uim` | `~/.uim` | uim（日本語入力、Android Linux 用） |
+| `codex/` | `~/.codex/` | Codex (config.toml, AGENTS.md, rules/default.rules) |
 | `claude/` | `~/.claude/` | Claude Code (CLAUDE.md, settings, skills, commands, agents) |
 
 ## デザイン方針
@@ -29,6 +30,8 @@ sh setup.sh
 ## 編集時の注意
 
 - ファイルはシンボリックリンク経由で即反映される。変更後にコピーやデプロイは不要
+- `codex/AGENTS.md` は Codex のグローバル指示として使われる。日本語応答や Markdown ドキュメントの作成言語など、全プロジェクト共通の振る舞いはここに書く
+- `codex/config.toml` は Codex のグローバル設定として使われる。認証情報やセッション履歴、SQLite 状態ファイルはリポジトリに含めない
 - `claude/CLAUDE.md` はグローバル設定（`~/.claude/CLAUDE.md`）として使われる。このファイル（リポジトリルートの `CLAUDE.md`）はプロジェクト固有の設定
 - 新しいツールの設定を追加する場合は `setup.sh` にリンク作成を追記すること
 - `claude/` 配下は symlink 戦略が2種類混在する：個別ファイル（`CLAUDE.md`, `settings.json`, `statusline-command.sh`, `statusline.py`）と、ディレクトリごと（`skills/`, `commands/`, `agents/`）。詳細は `setup.sh` 参照。`~/.claude/` 直下に新規ファイルを追加する場合は `setup.sh` への追記が必要

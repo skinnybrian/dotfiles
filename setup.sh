@@ -9,6 +9,12 @@ ln -sfn ~/dotfiles/nvim ~/.config/nvim
 ln -sfn ~/dotfiles/ghostty ~/.config/ghostty
 ln -sfn ~/dotfiles/zellij ~/.config/zellij
 
+# Codex
+mkdir -p ~/.codex/rules
+ln -sf ~/dotfiles/codex/config.toml ~/.codex/config.toml
+ln -sf ~/dotfiles/codex/AGENTS.md ~/.codex/AGENTS.md
+ln -sf ~/dotfiles/codex/rules/default.rules ~/.codex/rules/default.rules
+
 # Claude Code
 mkdir -p ~/.claude
 ln -sf ~/dotfiles/claude/CLAUDE.md ~/.claude/CLAUDE.md
