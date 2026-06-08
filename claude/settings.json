@@ -94,6 +94,11 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/chrome-open.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/trash-guard.sh",
+            "statusMessage": "trash-guard: rm をチェック中"
           }
         ]
       }
