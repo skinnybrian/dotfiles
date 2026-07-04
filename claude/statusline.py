@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import json, sys, os, subprocess
+import json, sys, os, re, subprocess
 
 data = json.load(sys.stdin)
 
@@ -56,6 +56,96 @@ def format_tokens(total):
     return str(total)
 
 
+def portless_url(cwd, branch, branch_is_symbolic):
+    """起動中の portless ルートの URL を返す。なければ ''（失敗も常に ''）。"""
+    try:
+        state_dir = os.environ.get('PORTLESS_STATE_DIR') or os.path.expanduser('~/.portless')
+        routes_path = os.path.join(state_dir, 'routes.json')
+        if not cwd or not os.path.isfile(routes_path):
+            return ''
+        with open(routes_path) as f:
+            routes = json.load(f)
+        if not isinstance(routes, list) or not routes:
+            return ''
+
+        def sanitize(name):
+            s = re.sub(r'[^a-z0-9-]', '-', name.lower())
+            s = re.sub(r'-{2,}', '-', s)
+            return s.strip('-')
+
+        # base 名の導出（portless 本体と同じ優先順）
+        pkg_portless = pkg_name = pl_name = git_root = ''
+        d = cwd
+        while True:
+            if not (pkg_name or pkg_portless):
+                try:
+                    with open(os.path.join(d, 'package.json')) as f:
+                        pkg = json.load(f)
+                    p = pkg.get('portless')
+                    if isinstance(p, str):
+                        pkg_portless = p
+                    elif isinstance(p, dict) and isinstance(p.get('name'), str):
+                        pkg_portless = p['name']
+                    if isinstance(pkg.get('name'), str):
+                        pkg_name = re.sub(r'^@[^/]+/', '', pkg['name'])
+                except (OSError, ValueError):
+                    pass
+            if not pl_name:
+                try:
+                    with open(os.path.join(d, 'portless.json')) as f:
+                        pl = json.load(f)
+                    if isinstance(pl.get('name'), str):
+                        pl_name = pl['name']
+                except (OSError, ValueError):
+                    pass
+            if not git_root and os.path.exists(os.path.join(d, '.git')):
+                git_root = d
+            parent = os.path.dirname(d)
+            if parent == d:
+                break
+            d = parent
+        base = ''
+        for cand in (pkg_portless, pl_name, pkg_name,
+                     os.path.basename(git_root) if git_root else ''):
+            if cand and sanitize(cand):
+                base = sanitize(cand)
+                break
+        if not base:
+            return ''
+
+        # linked worktree のみブランチ最終セグメントを prefix（portless と同じ規則）
+        prefix = ''
+        if git_root and os.path.isfile(os.path.join(git_root, '.git')):
+            if branch_is_symbolic and branch not in ('main', 'master', 'HEAD'):
+                prefix = sanitize(branch.split('/')[-1])
+        effective = f'{prefix}.{base}' if prefix else base
+        hostname = f'{effective}.localhost'
+
+        for r in routes:
+            if not isinstance(r, dict) or r.get('hostname') != hostname:
+                continue
+            try:
+                os.kill(int(r['pid']), 0)
+            except (ProcessLookupError, ValueError, TypeError, OverflowError, KeyError):
+                return ''
+            except PermissionError:
+                pass  # 生存しているが別ユーザー
+            tls = os.path.isfile(os.path.join(state_dir, 'proxy.tls'))
+            port = 443 if tls else 80
+            try:
+                with open(os.path.join(state_dir, 'proxy.port')) as f:
+                    port = int(f.read().strip())
+            except (OSError, ValueError):
+                pass
+            proto = 'https' if tls else 'http'
+            if port == (443 if tls else 80):
+                return f'{proto}://{hostname}'
+            return f'{proto}://{hostname}:{port}'
+        return ''
+    except Exception:
+        return ''
+
+
 # --- Data extraction ---
 cwd = data.get('workspace', {}).get('current_dir') or data.get('cwd', '')
 project_dir = data.get('workspace', {}).get('project_dir') or ''
@@ -96,6 +186,7 @@ if transcript and os.path.isfile(transcript):
 
 # Git branch
 branch = ''
+branch_is_symbolic = False
 if cwd:
     try:
         result = subprocess.run(
@@ -104,6 +195,7 @@ if cwd:
         )
         if result.returncode == 0:
             branch = result.stdout.strip()
+            branch_is_symbolic = True
         else:
             result = subprocess.run(
                 ['git', '-C', cwd, 'rev-parse', '--short', 'HEAD'],
@@ -134,6 +226,9 @@ if model:
     if effort:
         model_str += f'  [{effort}]'
     parts2.append(model_str)
+url = portless_url(cwd, branch, branch_is_symbolic)
+if url:
+    parts2.append(f'\U0001f310 {url}')
 line2 = '  '.join(parts2)
 
 # --- Line 3: Context bar + tokens | 5h bar | 7d bar ---
