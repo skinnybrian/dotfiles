@@ -58,6 +58,7 @@ def format_tokens(total):
 
 # --- Data extraction ---
 cwd = data.get('workspace', {}).get('current_dir') or data.get('cwd', '')
+project_dir = data.get('workspace', {}).get('project_dir') or ''
 model = data.get('model', {}).get('display_name', '')
 effort = os.environ.get('CLAUDE_CODE_EFFORT_LEVEL', '')
 ctx_pct = data.get('context_window', {}).get('used_percentage')
@@ -66,6 +67,13 @@ total_out = data.get('context_window', {}).get('total_output_tokens')
 transcript = data.get('transcript_path', '')
 five_pct = data.get('rate_limits', {}).get('five_hour', {}).get('used_percentage')
 week_pct = data.get('rate_limits', {}).get('seven_day', {}).get('used_percentage')
+
+# Worktree name: --worktree session or linked worktree via workspace.git_worktree
+worktree_name = (
+    (data.get('worktree') or {}).get('name')
+    or data.get('workspace', {}).get('git_worktree')
+    or ''
+)
 
 # Session slug from transcript JSONL
 session_slug = ''
@@ -107,15 +115,20 @@ if cwd:
         pass
 
 # --- Line 1: Directory + Session slug ---
-short_cwd = f'\U0001f4c2 {os.path.basename(cwd)}' if cwd else ''
+# Use project_dir (repo root) as the display name; fall back to cwd basename
+display_dir = os.path.basename(project_dir) if project_dir else (os.path.basename(cwd) if cwd else '')
+short_cwd = f'\U0001f4c2 {display_dir}' if display_dir else ''
 line1 = short_cwd
 if session_slug:
     line1 += f'  \U0001f506 {session_slug}'
 
-# --- Line 2: Git branch + Model + Effort ---
+# --- Line 2: Git branch + Worktree + Model + Effort ---
 parts2 = []
 if branch:
-    parts2.append(branch)
+    branch_str = branch
+    if worktree_name:
+        branch_str += f'  \U0001f333 {worktree_name}'
+    parts2.append(branch_str)
 if model:
     model_str = model
     if effort:
