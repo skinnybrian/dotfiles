@@ -50,7 +50,7 @@ allowed-tools: Read, Bash, Glob, Grep
 
 - `command -v portless` が通れば `portless list` で対象プロジェクト（worktree 含む）のサーバが起動済みか確認する
 - このセッションで起動済みの background task があればそれも確認する
-- **起動済みなら URL を報告して終了する。**「再起動して」と明示されたときだけ、`portless list` で対象 app の PID を確認し、**その PID だけ**を kill してから起動し直す。共有リバースプロキシを絶対に巻き込まない（グローバル CLAUDE.md の portless ルール参照）
+- **起動済みなら URL を報告して終了する。**「再起動して」と明示されたときだけ、`portless list` で対象 app の PID を確認し、**その PID だけ**を kill してから起動し直す。共有リバースプロキシを絶対に巻き込まない（`~/dotfiles/claude/fragments/portless.md` の kill ルール参照）
 
 ### 2. 起動コマンドの特定（優先順）
 
