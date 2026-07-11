@@ -73,3 +73,8 @@ codex/sessions/
 codex/shell_snapshots/
 codex/sqlite/
 codex/vendor_imports/
+
+# Codex local-only config: マシン固有の承認ポリシー & 自動追記される状態
+# (symlink の実体は残るので Codex は動作する。共有したい指示は AGENTS.md に置く)
+codex/config.toml
+codex/rules/default.rules
