@@ -42,6 +42,23 @@ vim.keymap.set('n', '<leader>f', function()
   require('fzf-lua').git_files({ cmd = 'git ls-files --exclude-standard --cached --others --deduplicate' })
 end)
 vim.keymap.set('n', '<leader>g', "<cmd>lua require('fzf-lua').live_grep()<CR>")
+vim.keymap.set('n', '<leader>w', function()
+  local root = vim.fn.systemlist('git rev-parse --show-toplevel')[1]
+  if not root or root == '' then
+    vim.notify('Not in a git repo', vim.log.levels.WARN)
+    return
+  end
+  local wt_path = root .. '/.claude/worktrees'
+  if vim.fn.isdirectory(wt_path) == 0 then
+    vim.notify('No .claude/worktrees/ found', vim.log.levels.INFO)
+    return
+  end
+  require('fzf-lua').files({
+    cwd = wt_path,
+    cmd = [[find . -path "*/docs/superpowers/*.md" -type f]],
+    prompt = 'Worktree Docs> ',
+  })
+end)
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -62,7 +79,6 @@ require("lazy").setup({
     "ellisonleao/gruvbox.nvim",
     priority = 1000,
     config = true,
-    opts = ...
   },
   {
     "ibhagwan/fzf-lua",
@@ -126,6 +142,10 @@ require("lazy").setup({
     build = ":TSUpdate",
     config = function()
       require("nvim-treesitter").setup()
+      require("nvim-treesitter").install({
+        'c', 'elixir', 'heex', 'html', 'javascript', 'lua',
+        'markdown', 'markdown_inline', 'query', 'tsx', 'typescript', 'vim', 'vimdoc',
+      })
       vim.api.nvim_create_autocmd("FileType", {
         callback = function()
           pcall(vim.treesitter.start)
