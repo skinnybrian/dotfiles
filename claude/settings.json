@@ -43,6 +43,7 @@
       "Bash(env *)",
       "Bash(date *)",
       "Bash(curl *)",
+      "Bash(rtk *)",
       "Bash(* --version)",
       "Bash(* --help *)",
       "Bash(open *)",
@@ -64,6 +65,7 @@
     ],
     "defaultMode": "auto"
   },
+  "model": "sonnet",
   "hooks": {
     "Notification": [
       {
@@ -93,6 +95,10 @@
         "hooks": [
           {
             "type": "command",
+            "command": "rtk hook claude"
+          },
+          {
+            "type": "command",
             "command": "~/.claude/hooks/chrome-open.sh"
           },
           {
@@ -109,7 +115,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -q 'CLAUDE.md'; then echo '⚠ CLAUDE.mdが変更されました。`/claude-md-management:claude-md-improver` で監査を実行してください。' >&2; fi"
+            "command": "fp=$(jq -r '.tool_input.file_path // empty'); case \"$fp\" in *CLAUDE.md) echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"CLAUDE.md が変更されました。`/claude-md-management:claude-md-improver` で監査を実行してください。\"}}' ;; esac"
           }
         ]
       }
@@ -132,11 +138,14 @@
   },
   "enabledPlugins": {
     "claude-md-management@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true
+    "superpowers@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true
   },
   "language": "日本語",
   "feedbackSurveyRate": 0,
   "effortLevel": "xhigh",
+  "tui": "fullscreen",
+  "skipWorkflowUsageWarning": true,
   "skipAutoPermissionPrompt": true,
   "editorMode": "vim",
   "agentPushNotifEnabled": true
