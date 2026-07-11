@@ -10,6 +10,11 @@ BOLD = '\033[1m'
 BLOCKS = ' \u258f\u258e\u258d\u258c\u258b\u258a\u2589\u2588'
 
 
+def hyperlink(url, text):
+    # OSC 8 で対応ターミナル上でクリック可能なリンクにする（非対応環境ではテキストのみ表示）
+    return f'\033]8;;{url}\033\\{text}\033]8;;\033\\'
+
+
 def gradient(pct):
     # Gruvbox: green → yellow → orange → red
     stops = [
@@ -146,6 +151,29 @@ def portless_url(cwd, branch, branch_is_symbolic):
         return ''
 
 
+# advisorModel (~/.claude/settings.json) のエイリアス → 表示名
+# 確認済みの対応のみ列挙し、未知のエイリアスは title() でフォールバックする
+ADVISOR_MODEL_NAMES = {
+    'fable': 'Fable 5',
+    'opus': 'Opus 4.8',
+    'sonnet': 'Sonnet 5',
+    'haiku': 'Haiku 4.5',
+}
+
+
+def advisor_display_name():
+    """~/.claude/settings.json の advisorModel を表示名に変換する。未設定/読み取り失敗時は ''。"""
+    try:
+        with open(os.path.expanduser('~/.claude/settings.json')) as f:
+            settings = json.load(f)
+        alias = settings.get('advisorModel', '')
+        if not alias:
+            return ''
+        return ADVISOR_MODEL_NAMES.get(alias.lower(), alias.title())
+    except (OSError, ValueError, AttributeError):
+        return ''
+
+
 # --- Data extraction ---
 cwd = data.get('workspace', {}).get('current_dir') or data.get('cwd', '')
 project_dir = data.get('workspace', {}).get('project_dir') or ''
@@ -214,7 +242,7 @@ line1 = short_cwd
 if session_slug:
     line1 += f'  \U0001f506 {session_slug}'
 
-# --- Line 2: Git branch + Worktree + Model + Effort ---
+# --- Line 2: Git branch + Worktree + Model + Effort + Advisor ---
 parts2 = []
 if branch:
     branch_str = branch
@@ -226,10 +254,14 @@ if model:
     if effort:
         model_str += f'  [{effort}]'
     parts2.append(model_str)
-url = portless_url(cwd, branch, branch_is_symbolic)
-if url:
-    parts2.append(f'\U0001f310 {url}')
+advisor_name = advisor_display_name()
+if advisor_name:
+    parts2.append(f'Advisor: {advisor_name}')
 line2 = '  '.join(parts2)
+
+# --- Line 2b: Portless URL (own line, clickable via OSC 8) ---
+url = portless_url(cwd, branch, branch_is_symbolic)
+line2b = hyperlink(url, f'\U0001f310 {url}') if url else ''
 
 # --- Line 3: Context bar + tokens | 5h bar | 7d bar ---
 parts3 = []
@@ -260,5 +292,5 @@ if week_pct is not None:
 line3 = f' {DIM}\u2502{R} '.join(parts3)
 
 # --- Output ---
-lines = [l for l in [line1, line2, line3] if l]
+lines = [l for l in [line1, line2, line2b, line3] if l]
 print('\n'.join(lines), end='')

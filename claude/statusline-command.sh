@@ -47,6 +47,24 @@ if [ -n "$model" ]; then
   fi
 fi
 
+# Advisor model (~/.claude/settings.json の advisorModel エイリアス → 表示名)
+# 確認済みの対応のみ列挙し、未知のエイリアスは先頭大文字化でフォールバックする
+advisor_alias=$(jq -r '.advisorModel // empty' "$HOME/.claude/settings.json" 2>/dev/null)
+if [ -n "$advisor_alias" ]; then
+  case "$advisor_alias" in
+    fable) advisor_display="Fable 5" ;;
+    opus) advisor_display="Opus 4.8" ;;
+    sonnet) advisor_display="Sonnet 5" ;;
+    haiku) advisor_display="Haiku 4.5" ;;
+    *) advisor_display=$(printf '%s' "$advisor_alias" | awk '{ print toupper(substr($0,1,1)) substr($0,2) }') ;;
+  esac
+  if [ -n "$line2" ]; then
+    line2="${line2}  Advisor: ${advisor_display}"
+  else
+    line2="Advisor: ${advisor_display}"
+  fi
+fi
+
 # Line 3: Context progress bar + tokens
 line3=""
 
