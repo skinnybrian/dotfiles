@@ -1,6 +1,6 @@
 ---
 name: serve
-description: 開いているプロジェクトの開発サーバを自動判別してバックグラウンドで起動し、アクセスURLを報告する。「devサーバ起動して」「サーバ立ち上げて」「開発サーバ動かして」等の依頼でも使用する
+description: 開いているプロジェクトの開発サーバを自動判別してバックグラウンドで起動し、起動確認後にURLをChromeで自動的に開いて報告する。「devサーバ起動して」「サーバ立ち上げて」「開発サーバ動かして」等の依頼でも使用する
 allowed-tools: Read, Bash, Glob, Grep
 ---
 
@@ -41,9 +41,14 @@ allowed-tools: Read, Bash, Glob, Grep
 - background ログに ready / listening / エラーが出るまで確認する
 - 起動失敗したらログを添えて報告する。portless の死にルートが疑われる場合は `portless prune` を提案する
 
-### 6. 報告
+### 6. Chrome で開く
 
-- アクセス URL を報告する:
+- 起動確認できた URL を `open -a "Google Chrome" <URL>` で Chrome に自動的に開く
   - portless 経由: `https://<プロジェクト名>.localhost`（linked worktree ならブランチ名の最終セグメントがサブドメイン。statusline の 🌐 にも出る）
   - 直接起動: ログに出たポートから `http://localhost:<ポート>`
+- `command -v open` が通らない環境（Android Linux 等）ではこのステップをスキップする
+
+### 7. 報告
+
+- アクセス URL を報告する（Chrome で自動的に開いたことも一言添える。`open` が使えず開けなかった場合はその旨を伝える）
 - background task のログ確認方法も一言添える
