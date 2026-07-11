@@ -89,6 +89,9 @@ alias cr='claude --resume'
 alias cw='claude --worktree'
 alias cwt='claude --worktree --tmux'
 
+# Codex
+alias cx='codex --sandbox workspace-write --ask-for-approval on-request'
+
 # mise
 export PATH="$HOME/.local/share/mise/shims:$PATH"
 eval "$(mise activate zsh)"
