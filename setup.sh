@@ -32,3 +32,4 @@ rm -f ~/.claude/hooks/tmux-bell.sh
 ln -sf ~/dotfiles/claude/hooks/chrome-open.sh ~/.claude/hooks/chrome-open.sh
 ln -sf ~/dotfiles/claude/hooks/discord-notify.sh ~/.claude/hooks/discord-notify.sh
 ln -sf ~/dotfiles/claude/hooks/research-save-suggest.sh ~/.claude/hooks/research-save-suggest.sh
+ln -sf ~/dotfiles/claude/hooks/trash-guard.sh ~/.claude/hooks/trash-guard.sh
