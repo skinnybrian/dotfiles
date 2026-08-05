@@ -2,4 +2,5 @@ onboarding = false
 
 [ui]
 agent_panel_sort = "spaces"
+pane_borders = true
 pane_gaps = false
