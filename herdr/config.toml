@@ -1,5 +1,12 @@
 onboarding = false
 
+[keys]
+# tmux (.tmux.conf) の prefix に合わせる。2回押しで生キーがそのままpaneへパススルーされる。
+prefix = "ctrl+a"
+# 区切り線の向き基準でtmux側のバインドと対応させる: \ = 縦線(左右分割), - = 横線(上下分割)
+split_vertical = 'prefix+\'
+split_horizontal = "prefix+-"
+
 [ui]
 agent_panel_sort = "spaces"
 pane_borders = true
