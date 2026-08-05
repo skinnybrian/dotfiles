@@ -22,6 +22,7 @@ sh setup.sh
 | `.uim` | `~/.uim` | uim（日本語入力、Android Linux 用） |
 | `codex/` | `~/.codex/` | Codex（`AGENTS.md` のみ管理。`config.toml` / `rules/default.rules` は管理外） |
 | `claude/` | `~/.claude/` | Claude Code (CLAUDE.md, settings, skills, commands, agents) |
+| `herdr/` | `~/.config/herdr/` | herdr（`config.toml` のみ管理。ログ・ソケット・`session.json` 等の実行時生成物は管理外） |
 
 ## デザイン方針
 
