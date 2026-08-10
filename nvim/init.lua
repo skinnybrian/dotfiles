@@ -179,7 +179,25 @@ require("lazy").setup({
     'MeanderingProgrammer/render-markdown.nvim',
     dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
     ft = { 'markdown' },
-    opts = {},
+    -- テーブル描画だけ markdown-table-wrap.nvim に譲る。
+    -- render-markdown はセル内折り返しを持たず、幅が足りないと行ごと折り返して罫線が崩れるため。
+    opts = { pipe_table = { enabled = false } },
+  },
+  {
+    -- 狭い幅でも罫線を保ったままセル内で折り返す。日本語・絵文字の表示幅は
+    -- nvim_strwidth ベースで計算される。
+    'ice345/markdown-table-wrap.nvim',
+    ft = { 'markdown' },
+    opts = {
+      preview_mode = 'inline',      -- 既定は 'reader'。その場で描画して従来の見え方を保つ
+      inline_wrap_scope = 'always', -- 既定 'cursor' はカーソル行のテーブルのみ。長いソース行の漏れ対策も兼ねる
+      render_all = true,
+      highlights = {
+        -- 既定は border = { link = 'FloatBorder' } で gruvbox の bg=#3c3836 を引き継ぎ、
+        -- 罫線の部分だけ背景が浮く。fg のみ指定するとリンクが外れて背景が透過になる。
+        border = { fg = '#928374' },
+      },
+    },
   },
 })
 
