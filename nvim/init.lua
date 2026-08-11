@@ -24,6 +24,8 @@ opt.tabstop = 4
 opt.shiftwidth = 4
 opt.expandtab = true
 opt.autoindent = true
+opt.linebreak = true
+opt.breakindent = true
 opt.background = 'dark'
 vim.cmd('set nofixeol')
 
@@ -190,7 +192,8 @@ require("lazy").setup({
     ft = { 'markdown' },
     opts = {
       preview_mode = 'inline',      -- 既定は 'reader'。その場で描画して従来の見え方を保つ
-      inline_wrap_scope = 'always', -- 既定 'cursor' はカーソル行のテーブルのみ。長いソース行の漏れ対策も兼ねる
+      inline_wrap_scope = 'cursor', -- カーソル行のテーブルのみ処理。'always' だとテーブルのあるバッファ全体で
+                                     -- CursorMoved のたびに wrap が false に強制され、通常の長文が折り返されなくなるため
       render_all = true,
       highlights = {
         -- 既定は border = { link = 'FloatBorder' } で gruvbox の bg=#3c3836 を引き継ぎ、
