@@ -76,6 +76,7 @@ publicリポジトリの場合、コミット前にシークレット（APIキ�
 - `/md-to-pdf` — マークダウンファイルをPDFに変換（marked + Chrome --print-to-pdf、デフォルト出力先 `~/Downloads/`）
 - `/serve` — プロジェクトの dev サーバを自動判別してバックグラウンド起動し URL を報告（自然文「devサーバ起動して」でも発動）
 - `/gas-clasp` — GAS/claspコマンド実行時のアカウント指定運用ルール
+- `/herdr` — herdr の pane 並列展開・エージェント起動の運用ルール（頻出コマンド焼き込みで `--help` 参照を不要に。自然文「並列でエージェント立てて」でも発動）
 
 ### Commands（`commands/`）
 - `/git-init` — 既存プロジェクトに git 管理を導入
