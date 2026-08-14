@@ -79,6 +79,7 @@ publicリポジトリの場合、コミット前にシークレット（APIキ�
 - hooks スクリプト（`chrome-open.sh`, `discord-notify.sh`, `research-save-suggest.sh`）は `~/dotfiles/claude/hooks/` からの個別 symlink
 - `~/.claude/hooks/.env`（Discord Webhook URL 等）と `*.log` は環境固有のため `~/.claude/hooks/` に直接配置する。リポジトリには含めない
 - 複数プロジェクトで共有する CLAUDE.md 断片は `~/dotfiles/claude/fragments/` に置き、この CLAUDE.md を import できないプロジェクト（チームリポの CLAUDE.local.md 等）から `@~/dotfiles/claude/fragments/<名前>.md` で import する
+- `~/.claude` を cwd にして起動している状態で、symlink 元（`~/dotfiles/claude/`）にあるファイル（`CLAUDE.md`、`settings.json`、`skills/`、`commands/`、`agents/`、hooks スクリプト）を編集しそうになったら、着手前に「`~/dotfiles` で起動し直したほうがラク」と案内する。`~/.claude` は git リポジトリではないため git 操作に毎回 `cd` が必要で、`/commit` も素直に動かない。ユーザーが今のまま進めると判断したら、絶対パスで編集して続行する
 
 ## カスタムスキル / コマンド
 
