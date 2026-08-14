@@ -30,6 +30,10 @@
 
 - `oklg` — 「オッケーレッツゴー！」の略。肯定・GO サインとして扱う
 
+## UI/UXルール
+
+- 選択肢が5件以上になりうる一覧からの選択は AskUserQuestion を使わず、ナンバリング付きテキストリスト＋番号指定で行う（AskUserQuestionは選択肢4つまでで候補が漏れるため）
+
 ## プロジェクト初期化
 
 新しいプロジェクトをゼロから始める場合、GitHubリポジトリの作成有無と公開設定（public / private）を確認する。
@@ -58,6 +62,16 @@ publicリポジトリの場合、コミット前にシークレット（APIキ�
 
 リポジトリの公開状態は前提せず、`gh repo view --json visibility` で確認してから判断する。
 
+## skill 化の提案
+
+同一セッション内で同種の操作・手順を3回以上繰り返した、または複数セッションにまたがる定型作業だと気づいたら、skill 化をユーザに提案する。
+
+- 提案には「何を自動化するか」「skill 名の候補」「グローバル（`~/dotfiles/claude/skills/`）かプロジェクト（`.claude/skills/`）か」を添える
+- 作業の途中では止めず、一区切りついたタイミングで提案する
+- 断られたら同一セッション内では再提案しない
+- 受け入れられたら `superpowers:writing-skills` に従って作成する
+- 既存の skill / command でカバーできる場合は、新規作成ではなくそれを案内する
+
 ## ファイル構成
 
 - `settings.json`、`statusline-command.sh`、`statusline.py`、`skills/`、`commands/`、`agents/` は `~/dotfiles/claude/` からの symlink
@@ -65,6 +79,7 @@ publicリポジトリの場合、コミット前にシークレット（APIキ�
 - hooks スクリプト（`chrome-open.sh`, `discord-notify.sh`, `research-save-suggest.sh`）は `~/dotfiles/claude/hooks/` からの個別 symlink
 - `~/.claude/hooks/.env`（Discord Webhook URL 等）と `*.log` は環境固有のため `~/.claude/hooks/` に直接配置する。リポジトリには含めない
 - 複数プロジェクトで共有する CLAUDE.md 断片は `~/dotfiles/claude/fragments/` に置き、この CLAUDE.md を import できないプロジェクト（チームリポの CLAUDE.local.md 等）から `@~/dotfiles/claude/fragments/<名前>.md` で import する
+- `~/.claude` を cwd にして起動している状態で、symlink 元（`~/dotfiles/claude/`）にあるファイル（`CLAUDE.md`、`settings.json`、`skills/`、`commands/`、`agents/`、hooks スクリプト）を編集しそうになったら、着手前に「`~/dotfiles` で起動し直したほうがラク」と案内する。`~/.claude` は git リポジトリではないため git 操作に毎回 `cd` が必要で、`/commit` も素直に動かない。ユーザーが今のまま進めると判断したら、絶対パスで編集して続行する
 
 ## カスタムスキル / コマンド
 
