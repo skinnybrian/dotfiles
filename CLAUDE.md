@@ -65,5 +65,9 @@ uim-fep                  # 起動後 Ctrl+_ で IME トグル
 - **Ctrl+_ = uim-fep トグル**（Android Linux / AVF Debian）: `Ctrl+Space` / `Alt+j` が AVF 実機で動作しなかったための選択。`Ctrl+_` は bash/zsh readline の undo と衝突するが、uim-fep 起動中はキーを横取りするため実害なし。uim-fep 未起動のシェルでは Ctrl+_ が undo として効く点に注意
 - **Android Linux Terminal の貼り付け**: Ctrl+V は readline の `quoted-insert` に取られているため効かない。**`Ctrl+Shift+V`** が OS クリップボード貼り付け（xterm 系の慣習）。`Shift+Insert` / 長押し Paste も利用可
 - **Ghostty Quick Terminal × Karabiner**: Quick Terminal は `NSPanel` 系ウィンドウで macOS の "frontmost application" を切り替えない。Karabiner の `frontmost_application_unless` で Ghostty を除外しても Quick Terminal では効かず、直前のアプリが frontmost のまま判定される。Karabiner の `Ctrl+D → delete_forward` 変換ルールはこの問題で `\E[3~` (Forward Delete CSI) が tmux に届くため削除済（2026-04-25 実施）。同様の `frontmost_application_unless` ベースのアプリ依存リマップは Quick Terminal で意図せず発火するので注意
-- **macOS の Cmd キーは TUI に届かない**: Cmd 系は OS / Ghostty が消費するため、herdr のような TUI は `Cmd+Shift+[` / `]` を直接受け取れない。ネイティブ感のある Cmd ショートカットを TUI に割り当てたい場合は、Ghostty の `keybind = <キー>=text:<バイト列>` で **TUI が解釈できるキーシーケンスを合成して送る**。herdr のタブ移動は `super+shift+[=text:\x01p` / `super+shift+]=text:\x01n`（`\x01` = `C-a` = prefix）で実現。`unbind` して Cmd をそのまま流す方法は、TUI 側が Kitty keyboard protocol を有効化していないとキーが完全に死ぬため不採用。Ghostty のキーバインドはアプリ全体に効くので、tmux 等 prefix を共有する多重化ツールとの意味の整合も確認すること
+- **macOS の Cmd キーは TUI に届かない**: Cmd 系は OS / Ghostty が消費するため、herdr のような TUI は `Cmd+Shift+[` / `]` を直接受け取れない。Ghostty の `keybind = <キー>=text:<バイト列>` で **TUI が解釈できるキーを合成して送る**ことで解決する:
+  1. **Ghostty**: `keybind = super+shift+[=text:\x01p`（`\x01` = `C-a` = herdr の prefix）
+  2. **herdr**: `previous_tab` / `next_tab` を `config.toml` に明示（既定と同値でも、既定変更で無言に壊れないため）
+  3. **注意**: Ghostty のキーバインドはアプリ全体に効く。tmux 等 prefix を共有するツールとの意味の整合を確認する
+  - `unbind` で Cmd をそのまま流す案は、TUI が Kitty keyboard protocol を有効化していないとキーが完全に死ぬため不採用
 - **tmux copy-mode の `C-d/C-u`** は `halfpage-down/up` でカーソル移動のみ実行する。画面表示はカーソルが画面端を超えるまで動かない。`prefix [` 突入直後は既に画面最下端のため `C-d` を押しても画面が変わらず「効かないように見える」が仕様。画面そのものをスクロールしたい場合は `J/K` (scroll-down/up 各 1 行) や `C-e/C-y` を copy-mode-vi にバインドする
