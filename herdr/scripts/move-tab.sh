@@ -8,7 +8,7 @@ direction="${1:?Usage: $(basename "$0") left|right}"
 : "${HERDR_ACTIVE_TAB_ID:?This command must run from Herdr}"
 
 request() {
-  printf '%s\n' "$1" | nc -U "$HERDR_SOCKET_PATH"
+  printf '%s\n' "$1" | nc -U -w 5 "$HERDR_SOCKET_PATH"
 }
 
 tabs_response="$(request "$(jq -cn \
