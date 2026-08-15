@@ -43,6 +43,12 @@
 - 実装作業（コード変更・設定変更等）は基本的に git worktree で作業ツリーを分離してから行う。現在のブランチで直接 commit せず、切り出した worktree 上の新しいブランチで作業・コミットし、PR を作成する
 - **main への自動マージはしない**。PR を作成したら止め、マージするかどうかはユーザーの判断に委ねる
 - 「main に直接マージしてよい」など運用ルールが明記されているプロジェクト/ブランチに限り、その記載に従う
+- **PR がマージされたら、確認を挟まずそのまま後片付けまで実行する**。マージ済みなら commit は main に入っているので復元可能:
+  1. `gh pr view <番号> --json state,mergeCommit` で `MERGED` を確認する（確認が取れなければ以降は実行しない）
+  2. `ExitWorktree` で worktree を抜ける（`action: "keep"`。作成後にブランチ名を変更していると `remove` が対象を取り違えることがあるため、削除は手動で行う）
+  3. `git worktree remove <worktreeパス>`
+  4. `git branch -d <ブランチ>`（squash merge では「未マージ」と拒否されることがある。その場合のみ `-D`）
+  5. `git push origin --delete <ブランチ>`
 
 ## Pull Request の作成
 
