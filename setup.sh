@@ -37,3 +37,4 @@ ln -sf ~/dotfiles/claude/hooks/trash-guard.sh ~/.claude/hooks/trash-guard.sh
 # herdr
 mkdir -p ~/.config/herdr
 ln -sf ~/dotfiles/herdr/config.toml ~/.config/herdr/config.toml
+ln -sfn ~/dotfiles/herdr/scripts ~/.config/herdr/scripts

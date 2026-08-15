@@ -7,6 +7,18 @@ prefix = "ctrl+a"
 split_vertical = 'prefix+\'
 split_horizontal = "prefix+-"
 
+[[keys.command]]
+key = "prefix+comma"
+type = "shell"
+command = "~/.config/herdr/scripts/move-tab.sh left"
+description = "move current tab left"
+
+[[keys.command]]
+key = "prefix+period"
+type = "shell"
+command = "~/.config/herdr/scripts/move-tab.sh right"
+description = "move current tab right"
+
 [ui]
 agent_panel_sort = "spaces"
 pane_borders = true
