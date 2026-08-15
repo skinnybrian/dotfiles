@@ -29,3 +29,10 @@ keybind = alt+right=unbind
 # Ctrl+h を ASCII BS(0x08) ではなく CSI u 形式で送信し、tmux/nvim で
 # Backspace と区別できるようにする (smart-splits.nvim 連携用)
 keybind = ctrl+h=csi:104;5u
+
+# Cmd+Shift+[ / ] を Ghostty 自身のタブ移動ではなく herdr のタブ移動に使う。
+# Cmd は macOS 予約でそのままでは TUI に届かないため、Ghostty 側でキーを捕まえて
+# \x01 (= Ctrl+A = herdr/tmux の prefix) + p/n を合成して送る。
+# tmux 内でも prefix が同じ C-a で n/p は既定の next/previous-window なので意味が一致する。
+keybind = super+shift+[=text:\x01p
+keybind = super+shift+]=text:\x01n

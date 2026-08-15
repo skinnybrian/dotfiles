@@ -6,6 +6,10 @@ prefix = "ctrl+a"
 # 区切り線の向き基準でtmux側のバインドと対応させる: \ = 縦線(左右分割), - = 横線(上下分割)
 split_vertical = 'prefix+\'
 split_horizontal = "prefix+-"
+# Ghostty の Cmd+Shift+[ / ] がこの2つを合成して呼ぶ (ghostty/config 参照)。
+# herdr の既定値と同じだが、既定が変わっても Ghostty 側が壊れないよう明示しておく。
+previous_tab = "prefix+p"
+next_tab = "prefix+n"
 
 [ui]
 agent_panel_sort = "spaces"
