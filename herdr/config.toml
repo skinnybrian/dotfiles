@@ -27,3 +27,7 @@ description = "move current tab right"
 agent_panel_sort = "spaces"
 pane_borders = true
 pane_gaps = false
+
+# claude/skills/herdr/scripts/report-pr.sh が報告する $pr トークンをagent行に表示する
+[ui.sidebar.agents]
+rows = [["state_icon", "workspace", "tab"], ["agent"], ["$pr"]]
