@@ -52,6 +52,16 @@ herdr pane read <pane_id> --source recent-unwrapped --lines 120
 
 `wait-output` は既存出力にも即マッチする。`--regex` で Rust 正規表現も可。**wait 系（`pane wait-output` / `agent wait` / `agent prompt --wait`）はいずれも `--timeout` 省略で無期限待ち**になるため、常に `--timeout` を明示する。
 
+## Golden path: PR番号をサイドバーに反映
+
+`gh pr create` した直後に実行すると、そのセッションの agent 行に PR 番号（`$pr` トークン、例: `PR:#123`）が表示される。1session=1PR運用が前提で、マージ/クローズ後の自動掃除はしない（次にこの pane でスクリプトを再実行したときに上書きされる程度）。
+
+```sh
+~/dotfiles/claude/skills/herdr/scripts/report-pr.sh
+```
+
+内部では `$HERDR_PANE_ID`（鉄則1のチェックが前提）と `gh pr view --json number` からPR番号を取得し、`herdr pane report-metadata` で報告する。herdr未インストール・`HERDR_PANE_ID` 未設定の環境では何もしない。
+
 ## Quick Reference
 
 | やりたいこと | コマンド |
@@ -63,6 +73,7 @@ herdr pane read <pane_id> --source recent-unwrapped --lines 120
 | pane 一覧 | `herdr pane list --workspace "$HERDR_WORKSPACE_ID"` |
 | 自分の pane 情報 | `herdr pane current --current` |
 | worktree 連携 workspace 作成 | `herdr worktree create --branch <名前>` |
+| PR番号をサイドバーに反映 | `~/dotfiles/claude/skills/herdr/scripts/report-pr.sh` |
 
 状態モデル: `working` → `idle`（既読の完了・入力可）/ `done`（未読のバックグラウンド完了）/ `blocked`（承認・質問 UI 検出）/ `unknown`（分類不能。**完了の証拠にならない**）。CLI read では既読にならない。
 
