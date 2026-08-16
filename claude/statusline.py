@@ -174,6 +174,18 @@ def advisor_display_name():
         return ''
 
 
+def persist_rate_limits(rate_limits):
+    """rate_limits（resets_at 含む）を ~/.claude/rate_limits.json に永続化する。dispatch-goal skill が利用上限からの自動再開判定に使う。書き込み失敗はレンダリングに影響させない。"""
+    try:
+        path = os.path.expanduser('~/.claude/rate_limits.json')
+        tmp = f'{path}.tmp.{os.getpid()}'
+        with open(tmp, 'w') as f:
+            json.dump(rate_limits, f)
+        os.replace(tmp, path)
+    except Exception:
+        pass
+
+
 # --- Data extraction ---
 cwd = data.get('workspace', {}).get('current_dir') or data.get('cwd', '')
 project_dir = data.get('workspace', {}).get('project_dir') or ''
@@ -183,8 +195,10 @@ ctx_pct = data.get('context_window', {}).get('used_percentage')
 total_in = data.get('context_window', {}).get('total_input_tokens')
 total_out = data.get('context_window', {}).get('total_output_tokens')
 transcript = data.get('transcript_path', '')
-five_pct = data.get('rate_limits', {}).get('five_hour', {}).get('used_percentage')
-week_pct = data.get('rate_limits', {}).get('seven_day', {}).get('used_percentage')
+rate_limits = data.get('rate_limits') or {}
+five_pct = rate_limits.get('five_hour', {}).get('used_percentage')
+week_pct = rate_limits.get('seven_day', {}).get('used_percentage')
+persist_rate_limits(rate_limits)
 
 # Worktree name: --worktree session or linked worktree via workspace.git_worktree
 worktree_name = (
