@@ -16,7 +16,7 @@ herdr skill の「複数並列」golden path は「`--wait` 無しで全員に�
 ## 固定プロンプト（逐語で送る。差し替えは `{issue番号}` のみ）
 
 ```
-/goal #{issue番号}を実装する。worktreeを必ず切る。superpowersスキルベースで進める。ブレスト途中でユーザに選択を求めてきた時は、推奨を自動選択して続行する。spec/plan両方作成完了次第、ユーザに確認を求めずに実装を進めてしまってOK。実装完了したらPRを作り、serveスキルでdevサーバを起動してから終えること。
+/goal #{issue番号}を実装する。superpowers:brainstorming → superpowers:writing-plans → superpowers:subagent-driven-development の順で進める。worktreeを必ず切ること。spec/planが完成するまでの間にユーザへ選択を求める場面が出たら、都度確認せず自分が推奨する選択肢を選んで進める。spec/planの作成が完了したら、そこから先もユーザ確認を求めず最後まで実装を進めてよい。実装完了後はPRを作成し、mainへのマージは行わず、serveスキルでdevサーバを起動してから終了すること。
 ```
 
 文言は変えない。要約・意訳して送らない。
