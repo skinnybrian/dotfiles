@@ -1,5 +1,10 @@
 onboarding = false
 
+# server起動時の $SHELL 未継承（例: launchd/brew services経由の自動起動）でも
+# pane が /bin/sh (= bash 3.2 の sh 互換モード) にフォールバックしないよう明示指定する
+[terminal]
+default_shell = "/bin/zsh"
+
 [keys]
 # tmux (.tmux.conf) の prefix に合わせる。2回押しで生キーがそのままpaneへパススルーされる。
 prefix = "ctrl+a"
