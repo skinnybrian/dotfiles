@@ -120,6 +120,18 @@
         ]
       }
     ],
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '/Users/brian/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
     "SubagentStop": [
       {
         "matcher": "",
@@ -144,6 +156,7 @@
   "language": "日本語",
   "feedbackSurveyRate": 0,
   "effortLevel": "xhigh",
+  "theme": "dark",
   "tui": "fullscreen",
   "skipWorkflowUsageWarning": true,
   "skipAutoPermissionPrompt": true,
