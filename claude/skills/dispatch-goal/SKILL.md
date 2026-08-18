@@ -43,10 +43,13 @@ herdr skill の「複数並列」golden path は「`--wait` 無しで全員に�
 
 **代わりに**: 対象ブランチの PR が立つ、または `agent_status` が `blocked` になるまで、**60秒間隔でポーリング**する。`idle` や `done` は完了の根拠にしない。ポーリングループは Bash tool の **`run_in_background: true`** で起動する。ブロックされるのは foreground 実行の長時間 `sleep` であって、`run_in_background: true` で起動したバックグラウンドの `sleep` ループはブロックされない（実測で確認済み）。全 Issue 解決でループが終了すると、その時点で完了通知が1回届く。Issue ごとに個別の通知を都度受け取りたい場合は Monitor tool（`persistent: true`）で同じスクリプトを起動してもよい（`echo` 行1つが通知1件になる点が Bash 版の「最後に1回だけ通知」と異なる）。
 
-**`blocked` には2種類ある**: `agent_status=blocked` を検知しても即座に「要確認」として扱わない。まず `herdr agent read <名前> --source recent-unwrapped --lines 50` で理由を分類する。
+**`blocked` には3種類ある**: `agent_status=blocked` を検知しても即座に「要確認」として扱わない。まず `herdr agent read <名前> --source recent-unwrapped --lines 50` で理由を分類する。
 
-- **タスク上の質問**（承認待ち・選択肢提示）→ 人間の判断が要る。ポーリングを終了しユーザーへ回す
 - **利用上限**（pane に `session limit` / `Upgrade your plan` という文字列が出る）→ 判断不要。下記の自動再開シーケンスに入る
+- **他セッションのPRマージ待ち**（pane に `PR #<番号>` への言及があり、「マージしてほしい」「マージされたら」等の依存を示す文言がある）→ 実質的にはタスク上の質問の一種だが、**オーケストレータ側で定型対応できる**。全文を読んで本当に他セッションの成果物のマージ待ちだと確認できたら、「他セッションのPRマージ待ちからの中継」節の手順に進む
+- **タスク上の質問（それ以外）**（承認待ち・選択肢提示）→ 人間の判断が要る。ポーリングを終了しユーザーへ回す
+
+判定の優先順位は上から順。利用上限の文字列は機械的に判定できるが、「他セッションのPRマージ待ち」かどうかは自然言語の判断が要るため、ポーリングスクリプトは `PR #<番号>` への言及があるかどうかだけを機械的な手がかりとして拾い、実際にマージ検知を仕掛けるかどうかの最終判断はオーケストレータ（このセッション）が行う。**PR番号が言及されているだけでは仕掛けない** — 「他セッションが明示的にそのPRのマージを待って停止している」と全文を読んで確認できた場合に限る（例: バグ修正の参考にPR番号を挙げているだけのケースは対象外）。
 
 ```bash
 repo="<owner>/<repo>"
@@ -127,7 +130,13 @@ while true; do
         echo "issue-$n: 利用上限だが resets_at が取得できない。要確認"; resolved[$n]=1
       fi
     else
-      echo "issue-$n: agent_status=blocked（要確認・タスク上の質問の可能性）"; resolved[$n]=1
+      pr_hint=$(echo "$read_out" | grep -oE 'PR ?#[0-9]+' | grep -oE '[0-9]+' | sort -un | sed 's/^/PR #/' | tr '\n' ' ')
+      if [ -n "$pr_hint" ]; then
+        echo "issue-$n: agent_status=blocked（要確認・他セッションのPRマージ待ちの可能性。言及: $pr_hint）"
+      else
+        echo "issue-$n: agent_status=blocked（要確認・タスク上の質問の可能性）"
+      fi
+      resolved[$n]=1
     fi
   done
   [ "${#resolved[@]}" -eq "${#issues[@]}" ] && break
@@ -158,6 +167,64 @@ pane テキストのフォールバック経路では引き続き `five_hour`/`s
 **既知の制約**:
 - エージェントがクラッシュした・pane が閉じられた場合はこのループでは検知できない（`herdr agent list` から消えるだけで、上記条件のどちらにも当たらない）。長時間ログが動かない場合は `herdr agent get issue-<番号>` で手動確認する
 - `rate_limits.json` は Claude Code のドキュメント化されていない内部フィールドに依存する（確認済みバージョン: 2.1.233）。将来変わる可能性があり、その場合は pane テキストのフォールバックに自動で切り替わる（それも崩れたら手動再開手順に頼る）
+
+## 他セッションのPRマージ待ちからの中継
+
+**いつ仕掛けるか**: メインのポーリングスクリプトが `pr_hint` 付きで blocked を報告したら、`herdr agent read <名前>` で全文を読み、他セッションの PR のマージを明示的に待って停止していると確認できた場合のみ、以下のマージ検知ループを新規に立てる。単に PR 番号に言及しているだけ（参考情報・過去の修正例など）のケースは対象外 — メインループの通常の「要確認」報告に任せる。
+
+```bash
+watch_pr="481"
+waiting_issue="464"
+repo="<owner>/<repo>"
+relay_prompt="PR #$watch_pr がマージされました。続けてください。まず最新のmainを取り込んで、コンフリクトがあれば解消してください。もし PR #$watch_pr と同じ型・同じコンポーネントを自分で作っていた場合は、それを削除して PR #$watch_pr 側の実装に寄せてください。"
+empty_count=0
+while true; do
+  pstate=$(gh pr view "$watch_pr" --repo "$repo" --json state -q .state 2>/dev/null)
+  if [ -z "$pstate" ]; then
+    empty_count=$((empty_count + 1))
+    if [ "$empty_count" -ge 5 ]; then
+      echo "PR #$watch_pr の状態が5回連続で取得できない（番号違い/gh認証切れの可能性）。要確認"; break
+    fi
+    sleep 60; continue
+  fi
+  empty_count=0
+  if [ "$pstate" = "MERGED" ]; then
+    echo "PR #$watch_pr がマージされた。issue-$waiting_issue へ中継する"
+    astatus=$(herdr agent get "issue-$waiting_issue" 2>/dev/null | jq -r '.result.agent.agent_status // empty')
+    if [ "$astatus" = "blocked" ]; then
+      herdr agent send-keys "issue-$waiting_issue" esc
+      sleep 3
+      astatus=$(herdr agent get "issue-$waiting_issue" 2>/dev/null | jq -r '.result.agent.agent_status // empty')
+    fi
+    if [ "$astatus" = "working" ]; then
+      echo "issue-$waiting_issue: esc後 working を確認、自動で続行している"
+    elif [ "$astatus" = "blocked" ]; then
+      echo "issue-$waiting_issue: esc後もblockedのまま。想定外のダイアログの可能性。要確認"
+    else
+      herdr agent send-keys "issue-$waiting_issue" ctrl+u
+      herdr agent prompt "issue-$waiting_issue" "$relay_prompt"
+      echo "issue-$waiting_issue: 中継完了"
+    fi
+    break
+  elif [ "$pstate" = "CLOSED" ]; then
+    echo "PR #$watch_pr はマージされずクローズされた。issue-$waiting_issue は要確認"; break
+  fi
+  sleep 60
+done
+```
+
+`repo`・`watch_pr`・`waiting_issue` はメインのポーリングループとは別に、その場で判明した値を埋めて `run_in_background: true` で個別に起動する（既存の完了検知ループと同じ方式）。判定条件は `MERGED` または `CLOSED`（マージされずクローズも終了条件に含める）。
+
+**中継の型**: 「再確認 → まだ blocked のときだけ esc → 少し待って再確認 → working/blocked継続/それ以外で分岐」という順序は、利用上限からの自動再開（実証済み）と同じ形をなぞっている。ダイアログを閉じてから安全にテキストを送るための唯一検証済みの経路がこの形だったため。`esc` 後もまだ `blocked` のままなら、利用上限側と同じく「想定外のダイアログの可能性。要確認」として人間に投げる — `blocked` のまま `ctrl+u`＋プロンプト送信を試みるのは安全性が検証されていないため行わない。ただし今回のケース（タスク上の質問への回答）は、利用上限のケースと違って **esc 後に自動で `working` に戻ることは想定していない**（何かを承認・選択待ちのまま止まっていた対話なので、esc で選択肢を閉じたあと `idle`/`done` になっているはず）。`working` に戻るケースを残しているのは安全側の分岐であり、まだ実運用で確認できていない。
+
+**中継プロンプトの3要素**:
+1. 続行の合図（「PR #◯◯ がマージされました。続けてください」）— 提示された選択肢に対する回答を兼ねる
+2. `最新のmainを取り込んで`という文言で `/sync-main` skill を自然文トリガーする（このリポジトリの skill 一覧に定義済み。明示的に `/sync-main` と書かなくても発動する）
+3. **先行PRと同じ型・同じ名前のものを自前で作っていた場合、それを捨てて先行PR版に寄せるよう念押しする** — 実際に踏んだケースでは、待っていたセッションが Task 1 で独自の `CanvasSelection` 型を仮置きしており、無言で「続けて」とだけ伝えると衝突したまま進めてしまう危険があった
+
+**中継後は完了検知ループを再度張り直す**: `resolved[$n]=1` になった issue はメインのポーリングループから既に外れているため、中継しただけでは誰も見ていない状態に戻る。中継が終わったら、その issue 単体で「完了検知：`agent wait` は使わない」節のポーリングループを `issues=(464)` のように対象を絞って再起動する。再起動したループが PR を検知したら「完了後の定型処理」を通常どおり行う。先行 PR のマージ待ちだった issue については、ユーザーへの最終報告に「どの PR がどの issue をブロックしていたか」の依存関係を一言添える。
+
+**プッシュ通知（子セッションからの「マージしたら知らせて」）は採用しない**: 検討はしたが見送った。理由は3つ。(1) 固定プロンプトはラウンド5でユーザー承認済みの逐語文言として凍結されており、この一件のために軽々に追記しない。(2) セッション間メッセージは子セッションが「送るべきタイミングだ」と判断しないと届かないため、ポーリングの代替にはならない（ポーリングと併用しても検知の主経路にはなり得ず、実装コストに見合わない）。(3) herdr の各 pane は別々の Claude Code セッションであり、pane 間でのメッセージ到達性は未検証。ポーリングのみで完結させる。
 
 ## 完了後の定型処理
 
@@ -190,6 +257,8 @@ pane テキストのフォールバック経路では引き続き `five_hour`/`s
 | `/rename` 後の名前で `herdr agent get` を呼ぶ | ポーリング対象は `agent start` に渡した名前（`issue-<番号>`）のまま。`/rename` は別の名前空間 |
 | 複数 Issue 間のファイル衝突を確認せずに並列起動する | 各 Issue 本文を読み、対象ファイル・機能領域の重なりを事前確認する。重なる場合は「前提」節に所有権を明記するか直列化を提案する |
 | ポーリングループを `run_in_background: true` を付けずに実行する | foreground の長時間 `sleep` はブロックされる。必ず `run_in_background: true` で起動する |
-| `blocked` を検知したら即座に「要確認」として人間に投げる | まず `herdr agent read` で理由を分類する。「session limit」「Upgrade your plan」なら利用上限＝判断不要、それ以外はタスク上の質問＝要確認 |
+| `blocked` を検知したら即座に「要確認」として人間に投げる | まず `herdr agent read` で理由を分類する。利用上限＝判断不要、他セッションのPRマージ待ち＝定型対応、それ以外のタスク上の質問＝要確認 |
 | 利用上限からの再開で `esc` を無条件で送る | 再開予定時刻到達後、まず `agent_status` を再確認し、まだ `blocked` のときだけ `esc` を送る。`working` なら子セッションが自動再開済みなので何もしない |
 | 再開プロンプト送信前に入力欄をクリアしない | `herdr agent send-keys <名前> ctrl+u` でクリアしてから送る。esc 後に古い入力テキストが残っていることがあり、そのまま送ると連結されて壊れる |
+| pane テキストに PR 番号が出ているだけでマージ検知ループを仕掛ける | 全文を読んで、他セッションの PR のマージを明示的に待って停止していると確認できた場合のみ仕掛ける。参考情報としての言及は対象外 |
+| PR マージを中継した後、その issue の完了検知ループを張り直さない | 中継前に `resolved[$n]=1` でメインループから外れているため、中継しただけでは誰も見ていない状態に戻る。中継後は対象を絞って完了検知ループを再起動する |
