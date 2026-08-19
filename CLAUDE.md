@@ -22,7 +22,7 @@ sh setup.sh
 | `.uim` | `~/.uim` | uim（日本語入力、Android Linux 用） |
 | `codex/` | `~/.codex/` | Codex（`AGENTS.md` のみ管理。`config.toml` / `rules/default.rules` は管理外） |
 | `claude/` | `~/.claude/` | Claude Code (CLAUDE.md, settings, skills, commands, agents) |
-| `herdr/` | `~/.config/herdr/` | herdr（`config.toml` のみ管理。ログ・ソケット・`session.json` 等の実行時生成物は管理外） |
+| `herdr/` | `~/.config/herdr/` | herdr（`config.toml` と `scripts/` を管理。ログ・ソケット・`session.json` 等の実行時生成物は管理外） |
 
 ## デザイン方針
 
@@ -35,9 +35,9 @@ sh setup.sh
 - `codex/config.toml` と `codex/rules/default.rules` はリポジトリ管理外（`.gitignore`）。Codex がマシン固有の状態（`trust_level`、connector の `approval_mode`、コマンド承認ポリシー、SHA256/バージョン等）を使用のたび自動追記し、業務プロジェクト名・connector ID・緩い承認ルールが PUBLIC リポに漏れやすいため。symlink の実体は dotfiles 内に残るので Codex は動作する。共有したいグローバル指示は `AGENTS.md` に書く（認証情報・セッション履歴・SQLite 状態ファイルも従来どおり含めない）
 - `claude/CLAUDE.md` はグローバル設定（`~/.claude/CLAUDE.md`）として使われる。このファイル（リポジトリルートの `CLAUDE.md`）はプロジェクト固有の設定
 - 新しいツールの設定を追加する場合は `setup.sh` にリンク作成を追記すること
-- `claude/` 配下は symlink 戦略が2種類混在する：個別ファイル（`CLAUDE.md`, `settings.json`, `statusline-command.sh`, `statusline.py`）と、ディレクトリごと（`skills/`, `commands/`, `agents/`）。詳細は `setup.sh` 参照。`~/.claude/` 直下に新規ファイルを追加する場合は `setup.sh` への追記が必要
+- `claude/` 配下は symlink 戦略が3種類混在する：個別ファイル（`CLAUDE.md`, `settings.json`, `statusline-command.sh`, `statusline.py`）、ディレクトリごと（`skills/`, `commands/`, `agents/`）、hooks の個別スクリプト symlink（`claude/hooks/*.sh` → `~/.claude/hooks/`）。詳細は `setup.sh` 参照。`~/.claude/` 直下に新規ファイルを追加する場合は `setup.sh` への追記が必要
 - `settings.local.json`（シークレット情報）は `~/.claude/` に直接配置する。リポジトリには含めない
-- hookスクリプト（`~/.claude/hooks/`）はリポジトリ管理外。変更はコミットに含まれない
+- hook スクリプトは `claude/hooks/` でリポジトリ管理し、`~/.claude/hooks/` へ個別 symlink する（`chrome-open.sh`, `discord-notify.sh`, `research-save-suggest.sh`, `trash-guard.sh`）。`~/.claude/hooks/` 直置きの `.env`・`*.log`・`herdr-agent-state.sh` は環境固有のため管理外（`herdr-agent-state.sh` は `settings.json` の SessionStart フックから参照されるが `setup.sh` では作成されない。新規マシンではこのフックだけ silent fail する）
 
 ## Android Linux (AVF Debian) セットアップ
 
