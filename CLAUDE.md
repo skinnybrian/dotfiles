@@ -39,6 +39,14 @@ sh setup.sh
 - `settings.local.json`（シークレット情報）は `~/.claude/` に直接配置する。リポジトリには含めない
 - hook スクリプトは `claude/hooks/` でリポジトリ管理し、`~/.claude/hooks/` へ個別 symlink する（`chrome-open.sh`, `discord-notify.sh`, `research-save-suggest.sh`, `trash-guard.sh`）。`~/.claude/hooks/` 直置きの `.env`・`*.log`・`herdr-agent-state.sh` は環境固有のため管理外（`herdr-agent-state.sh` は `settings.json` の SessionStart フックから参照されるが `setup.sh` では作成されない。新規マシンではこのフックだけ silent fail する）
 
+## Orca（デスクトップアプリ）との共存
+
+- `claude/settings.json` の `hooks` に入っている `~/.orca/agent-hooks/claude-hook.sh` を呼ぶブロック（11 イベント分）は **Orca が自動注入する**。手で消しても Orca 起動時に書き戻されるため、外したい場合は `orca agent hooks off` を使う
+  - 役割: 各セッションの `working` / `waiting` / `done` を Orca 本体（`127.0.0.1` の daemon）へ通知し、ワークスペースカードの状態表示に使う。外部送信はない
+  - シークレットは含まれない（トークンとポートは実行時に `~/Library/Application Support/orca/agent-hooks/endpoint.env` から読む）。`ORCA_*` 環境変数がない環境では no-op なので Android Linux でも無害
+- Orca / skills CLI が入れる外部スキルの実体は `~/.agents/skills/` にある。`orca skills install` や `npx skills add` は `~/.claude/skills` 起点の**相対** symlink を張るが、実体が `~/dotfiles/claude/skills/` のため `~/dotfiles/.agents/...` に解決されて壊れる。`setup.sh` が絶対パスで張り直すので、**スキルを入れたあとは `sh setup.sh` を実行する**（新しいスキルは `.gitignore` にも追記）
+- Orca 管理下のセッションには `ORCA_WORKTREE_ID` / `ORCA_PANE_KEY` / `ORCA_TAB_ID` などが環境変数で入る。`orca agent-context --json` で CLI の全コマンド（worktree / terminal / 内蔵ブラウザ / orchestration など）の機械可読スキーマが取れる
+
 ## Android Linux (AVF Debian) セットアップ
 
 Pixel の Linux Terminal（Android Virtualization Framework 上の Debian VM）で日本語入力を有効化する手順。`setup.sh` では自動化していない（apt / locale 周りは環境依存のため手動推奨）。

@@ -34,6 +34,17 @@ ln -sf ~/dotfiles/claude/hooks/discord-notify.sh ~/.claude/hooks/discord-notify.
 ln -sf ~/dotfiles/claude/hooks/research-save-suggest.sh ~/.claude/hooks/research-save-suggest.sh
 ln -sf ~/dotfiles/claude/hooks/trash-guard.sh ~/.claude/hooks/trash-guard.sh
 
+# Orca / skills CLI が入れる外部スキル（実体は ~/.agents/skills/ 側で管理）
+# `orca skills install` や `npx skills add` は ~/.claude/skills 起点の相対 symlink を張るが、
+# 実体が ~/dotfiles/claude/skills/ のため解決に失敗する。ここで絶対パスに張り直す。
+# 生成される symlink は .gitignore 済み（新しいスキルを入れたら .gitignore にも追記する）
+if [ -d ~/.agents/skills ]; then
+  for skill_dir in ~/.agents/skills/*/; do
+    [ -d "$skill_dir" ] || continue
+    ln -sfn "${skill_dir%/}" ~/dotfiles/claude/skills/"$(basename "$skill_dir")"
+  done
+fi
+
 # herdr
 mkdir -p ~/.config/herdr
 ln -sf ~/dotfiles/herdr/config.toml ~/.config/herdr/config.toml
