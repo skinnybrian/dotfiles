@@ -79,3 +79,13 @@ codex/vendor_imports/
 # (symlink の実体は残るので Codex は動作する。共有したい指示は AGENTS.md に置く)
 codex/config.toml
 codex/rules/default.rules
+
+# 各種ツールが自動生成するバックアップ
+*.bak
+
+# ~/.agents/skills 配下への symlink（setup.sh が生成。実体は Orca / skills CLI が管理）
+claude/skills/computer-use
+claude/skills/orchestration
+claude/skills/orca-cli
+claude/skills/find-skills
+claude/skills/freee-api-skill
