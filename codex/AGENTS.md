@@ -23,27 +23,18 @@ Claude Code の過去セッションと `~/.claude/CLAUDE.md` の雰囲気に合
 
 - `oklg` は「オッケーレッツゴー！」の略。肯定・GO サインとして扱う。
 
-## Project Structure & Module Organization
-This repository is a local Codex home directory, not an application source tree. Treat [`config.toml`](/Users/brian/.codex/config.toml) as the primary maintained file. Runtime and cache artifacts include `auth.json`, `history.jsonl`, `models_cache.json`, `version.json`, `state_5.sqlite*`, and `logs_2.sqlite*`. Keep generated content under `sessions/`, `shell_snapshots/`, `log/`, `sqlite/`, and `cache/` out of manual edits unless you are debugging Codex internals. Plugin bundles live in `plugins/cache/`, and imported skill content lives in `vendor_imports/`.
+## 指示の適用範囲
 
-## Build, Test, and Development Commands
-There is no build pipeline for this repository. Use inspection commands instead:
+このファイルは全プロジェクト共通の指示。現在の作業ディレクトリを Codex ホームとみなさない。
+リポジトリ構造、Git 管理の有無、編集対象、ビルド・テスト手順は、作業先の指示書と実際のファイル構成で確認する。
 
-- `codex --version`: verify the installed CLI version.
-- `sed -n '1,200p' config.toml`: review active configuration.
-- `rg -n "trust_level|mcp_servers|plugins" config.toml`: audit key settings quickly.
-- `find sessions -maxdepth 3 -type f | head`: inspect recorded session files.
+## 編集と検証
 
-After changing `config.toml`, restart Codex or open a fresh session so the new settings are picked up.
+- 対象ファイルの既存スタイルを保ち、無関係な設定を再整形しない。
+- 変更に合った検証を行い、実行した確認と未確認事項を区別して報告する。
+- 設定変更で再起動や新しいセッションが必要な場合は、その反映条件を伝える。
 
-## Coding Style & Naming Conventions
-Use ASCII by default. Keep Markdown concise, with short sections and actionable wording. In TOML, preserve the existing layout: global keys first, then grouped tables such as `[mcp_servers.*]`, `[projects.*]`, and `[plugins.*]`. Use absolute paths for local tools and project entries. Do not reformat unrelated settings while making a targeted change.
+## 機密情報
 
-## Testing Guidelines
-There is no automated test suite or coverage target here. Validate configuration changes by checking that Codex starts cleanly and the expected tool, plugin, or project trust entry appears in behavior. When changing docs, verify file names exactly match the configured fallback order, especially `CLAUDE.md` before `README.md`.
-
-## Commit & Pull Request Guidelines
-This directory is currently not a Git repository, so there is no local commit history to infer from. If you place it under version control, use short imperative commit titles such as `Add pencil MCP config` or `Document project doc fallback`. PRs should describe the user-visible effect, list edited paths, and call out any sensitive files intentionally excluded, especially `auth.json` and session logs.
-
-## Security & Configuration Tips
-Never paste secrets into documentation. Avoid committing `auth.json`, token-bearing caches, SQLite state, or raw session transcripts. Prefer editing `config.toml` and durable docs only; treat `plugins/cache/` and `vendor_imports/` as managed content unless you are intentionally updating installed assets.
+- 認証情報や秘密の値をドキュメント・コミット・PR に含めない。
+- キャッシュや実行時生成物を手動編集する必要がある場合は、作業目的との関連を確認する。
