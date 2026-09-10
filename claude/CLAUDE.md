@@ -159,6 +159,9 @@ Notion操作は MCP（`mcp__claude_ai_Notion__*`）と CLI（`ntn`）を使い�
 
 ## MCP サーバー
 
+- **MCP連携は claude.ai の Connector（`claude.ai/settings/connectors`）に一元管理する方針**。`~/.claude.json` の `mcpServers` や `~/.claude/.mcp.json` にはローカル直接設定を追加しない（同じサービスを2通りで設定する二重登録を避けるため）
+- Gmail・Google Calendar・Google Drive・Microsoft 365・Microsoft Learn MCP は Anthropic 専用プロキシ（`claudeai-proxy`）経由のため、claude.ai 側の Connector 設定が必須（ローカルでの代替不可）
+- GitHub は MCP コネクタが存在しない。従来どおり `gh` CLI で操作する
 - Notion API v2025-09-03 では `database` ID と `data_source` ID が別物。ページ作成には `database` ID を使う
 
 @RTK.md
