@@ -159,9 +159,6 @@ Notion操作は MCP（`mcp__claude_ai_Notion__*`）と CLI（`ntn`）を使い�
 
 ## MCP サーバー
 
-- Obsidian Local REST API はデフォルト HTTPS。`mcp-obsidian` には `OBSIDIAN_PROTOCOL=https` が必要
 - Notion API v2025-09-03 では `database` ID と `data_source` ID が別物。ページ作成には `database` ID を使う
-- MCP 設定: `~/.claude/.mcp.json`（シークレット含むため git 管理外）
-- Obsidian MCP は Obsidian が起動していないと接続不可
 
 @RTK.md
