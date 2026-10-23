@@ -54,8 +54,13 @@ herdr skill の「複数並列」golden path は「`--wait` 無しで全員に�
 ```bash
 repo="<owner>/<repo>"
 issues=(463 468)
-declare -A resolved
-declare -A resume_at
+# 連想配列（declare -A）は使わない: このスクリプトは Bash tool 直貼り（zsh）と
+# .sh ファイル化 + bash 実行（macOS の /bin/bash は bash 3.2 で連想配列非対応）の両経路で動く必要がある。
+# resolved は「解決済み issue 番号の空白区切りリスト + カウンタ」、resume_at は issue ごとの
+# 個別変数 resume_at_<番号> で持つ（読み書きは eval。bash 流の間接展開 ${!var} は zsh で動かない）。
+resolved=""
+resolved_count=0
+mark_resolved() { resolved="$resolved $1"; resolved_count=$((resolved_count + 1)); }
 resume_prompt="利用上限で中断していたはず。plan/ledgerを読み直して、どのタスクの直後で止まったか確認し、そこから続けて。テストや実装が中途半端なタスクがあれば完了させてから次へ進む。最後まで完走したらPRを作成し、mainへのマージは行わず、serveスキルでdevサーバを起動してから終了すること。"
 
 get_resets_at() {
@@ -82,24 +87,26 @@ get_resets_at() {
   echo "$target"
 }
 
+echo "監視開始: repo=$repo issues=${issues[*]}"
 while true; do
   prs=$(gh pr list --repo "$repo" --state open --json number,headRefName --limit 100)
   now=$(date +%s)
   for n in "${issues[@]}"; do
-    [ -n "${resolved[$n]:-}" ] && continue
+    case " $resolved " in *" $n "*) continue ;; esac
     pr=$(jq -r --arg p "feature/$n-" \
       '.[] | select((.headRefName == ($p|rtrimstr("-"))) or (.headRefName | startswith($p))) | .number' \
       <<< "$prs" | head -1)
     if [ -n "$pr" ]; then
-      echo "issue-$n: PR #$pr が立った"; resolved[$n]=1; continue
+      echo "issue-$n: PR #$pr が立った"; mark_resolved "$n"; continue
     fi
     astatus=$(herdr agent get "issue-$n" 2>/dev/null | jq -r '.result.agent.agent_status // empty')
     if [ "$astatus" != "blocked" ]; then
-      unset 'resume_at[$n]'
+      unset "resume_at_$n"
       continue
     fi
-    if [ -n "${resume_at[$n]:-}" ]; then
-      [ "$now" -lt "${resume_at[$n]}" ] && continue
+    eval "ra=\${resume_at_$n:-}"
+    if [ -n "$ra" ]; then
+      [ "$now" -lt "$ra" ] && continue
       astatus2="$astatus"
       if [ "$astatus2" = "blocked" ]; then
         herdr agent send-keys "issue-$n" esc
@@ -109,43 +116,47 @@ while true; do
       if [ "$astatus2" = "working" ]; then
         echo "issue-$n: リセット後 working を確認、自動再開済み"
       elif [ -z "$astatus2" ]; then
-        echo "issue-$n: agent が見つからない（クラッシュ/pane閉鎖の可能性）"; resolved[$n]=1
+        echo "issue-$n: agent が見つからない（クラッシュ/pane閉鎖の可能性）"; mark_resolved "$n"
       elif [ "$astatus2" = "blocked" ]; then
-        echo "issue-$n: esc後もblockedのまま。想定外のダイアログの可能性。要確認"; resolved[$n]=1
+        echo "issue-$n: esc後もblockedのまま。想定外のダイアログの可能性。要確認"; mark_resolved "$n"
       else
         herdr agent send-keys "issue-$n" ctrl+u
         herdr agent prompt "issue-$n" "$resume_prompt"
         echo "issue-$n: 再開プロンプトを送信した"
       fi
-      unset 'resume_at[$n]'
+      unset "resume_at_$n"
       continue
     fi
     read_out=$(herdr agent read "issue-$n" --source recent-unwrapped --lines 50 2>/dev/null)
     if echo "$read_out" | grep -qi "session limit\|Upgrade your plan"; then
       target=$(get_resets_at "$read_out")
       if [ -n "$target" ]; then
-        resume_at[$n]=$((target + 120))
-        echo "issue-$n: 利用上限を検知。$(date -r "${resume_at[$n]}") 頃に自動再開を試みる"
+        eval "resume_at_$n=$((target + 120))"
+        echo "issue-$n: 利用上限を検知。$(date -r "$((target + 120))") 頃に自動再開を試みる"
       else
-        echo "issue-$n: 利用上限だが resets_at が取得できない。要確認"; resolved[$n]=1
+        echo "issue-$n: 利用上限だが resets_at が取得できない。要確認"; mark_resolved "$n"
       fi
     else
       pr_hint=$(echo "$read_out" | grep -oE 'PR ?#[0-9]+' | grep -oE '[0-9]+' | sort -un | sed 's/^/PR #/' | tr '\n' ' ')
       if [ -n "$pr_hint" ]; then
-        echo "issue-$n: agent_status=blocked（要確認・他セッションのPRマージ待ちの可能性。言及: $pr_hint）"
+        echo "issue-$n: agent_status=blocked（要確認・他セッションのPRマージ待ちの可能性。言及: ${pr_hint}）"
       else
         echo "issue-$n: agent_status=blocked（要確認・タスク上の質問の可能性）"
       fi
-      resolved[$n]=1
+      mark_resolved "$n"
     fi
   done
-  [ "${#resolved[@]}" -eq "${#issues[@]}" ] && break
+  [ "$resolved_count" -eq "${#issues[@]}" ] && break
   sleep 60
 done
 echo "全Issue完了（PR出現 or blocked=要確認）"
 ```
 
 このスクリプトを Bash tool の `run_in_background: true` で起動する（実装ボリューム次第で数時間かかることがあるため）。全 Issue が解決してループが終了すると完了通知が届く。ブランチ名フィルタは `feature/<番号>-` の末尾ハイフンまで含めて誤マッチ（`feature/4630-...` 等）を防ぐ。
+
+**起動直後に監視が張れたことを確認する（必須）**: 起動から数秒後に出力（TaskOutput / 出力ファイル）を読み、開始マーカー `監視開始: ...` が出ていて、エラーが混ざっていないことを確認してから次の作業へ進む。ポーリングループは正常時ほとんど無出力のため、起動直後にスクリプトが落ちても `run_in_background` の完了通知は「終了した」としか言わず、**監視が張れていない失敗は静かに通る**（実際にシェル非互換で1周も回らず終了し、発見まで報告2往復のあいだ監視対象が無監視だった実績あり）。
+
+**実行経路によってシェルが変わる（bash 3.2 互換を維持する）**: Bash tool にコマンドを直接貼ると zsh で実行されるが、スクリプトを `.sh` ファイルに書き出して実行する（shebang `#!/bin/bash` や `bash file.sh`）と macOS の `/bin/bash` = **bash 3.2** が使われる。連想配列（`declare -A`、bash 4+ 専用）を使っていると後者の経路でだけ起動直後に `invalid option` で即死する — 「長いから一旦ファイルに書き出そう」とした人が実際に踏んだ。上のスクリプトが連想配列ではなく「空白区切りリスト + `eval` による動的変数名」を使っているのはこのためで、どちらの経路でも動く（bash 流の間接展開 `${!var}` も zsh で動かないため使わない）。もう1つ、bash 3.2 には **bare の `$var` 直後に全角文字が密着すると変数名の境界判定が壊れて展開ごと化けるバグ**がある（`"$pr_hint）"` が実際に化けた。`"${pr_hint}）"` のようにブレースを付けるか、間に半角スペースを挟めば正常）。日本語メッセージに変数を埋め込むときはブレース付き `${var}` を使うこと。編集時もこれらの互換性を維持する。
 
 **利用上限からの自動再開（実証済み手順、上のスクリプトの実装根拠）**:
 
@@ -178,6 +189,7 @@ waiting_issue="464"
 repo="<owner>/<repo>"
 relay_prompt="PR #$watch_pr がマージされました。続けてください。まず最新のmainを取り込んで、コンフリクトがあれば解消してください。もし PR #$watch_pr と同じ型・同じコンポーネントを自分で作っていた場合は、それを削除して PR #$watch_pr 側の実装に寄せてください。"
 empty_count=0
+echo "監視開始: PR #$watch_pr のマージ待ち（issue-$waiting_issue へ中継予定）"
 while true; do
   pstate=$(gh pr view "$watch_pr" --repo "$repo" --json state -q .state 2>/dev/null)
   if [ -z "$pstate" ]; then
@@ -213,7 +225,7 @@ while true; do
 done
 ```
 
-`repo`・`watch_pr`・`waiting_issue` はメインのポーリングループとは別に、その場で判明した値を埋めて `run_in_background: true` で個別に起動する（既存の完了検知ループと同じ方式）。判定条件は `MERGED` または `CLOSED`（マージされずクローズも終了条件に含める）。
+`repo`・`watch_pr`・`waiting_issue` はメインのポーリングループとは別に、その場で判明した値を埋めて `run_in_background: true` で個別に起動する（既存の完了検知ループと同じ方式。**起動直後の出力確認も完了検知ループと同様に行う**）。判定条件は `MERGED` または `CLOSED`（マージされずクローズも終了条件に含める）。
 
 **中継の型**: 「再確認 → まだ blocked のときだけ esc → 少し待って再確認 → working/blocked継続/それ以外で分岐」という順序は、利用上限からの自動再開（実証済み）と同じ形をなぞっている。ダイアログを閉じてから安全にテキストを送るための唯一検証済みの経路がこの形だったため。`esc` 後もまだ `blocked` のままなら、利用上限側と同じく「想定外のダイアログの可能性。要確認」として人間に投げる — `blocked` のまま `ctrl+u`＋プロンプト送信を試みるのは安全性が検証されていないため行わない。ただし今回のケース（タスク上の質問への回答）は、利用上限のケースと違って **esc 後に自動で `working` に戻ることは想定していない**（何かを承認・選択待ちのまま止まっていた対話なので、esc で選択肢を閉じたあと `idle`/`done` になっているはず）。`working` に戻るケースを残しているのは安全側の分岐であり、まだ実運用で確認できていない。
 
@@ -261,4 +273,6 @@ done
 | 利用上限からの再開で `esc` を無条件で送る | 再開予定時刻到達後、まず `agent_status` を再確認し、まだ `blocked` のときだけ `esc` を送る。`working` なら子セッションが自動再開済みなので何もしない |
 | 再開プロンプト送信前に入力欄をクリアしない | `herdr agent send-keys <名前> ctrl+u` でクリアしてから送る。esc 後に古い入力テキストが残っていることがあり、そのまま送ると連結されて壊れる |
 | pane テキストに PR 番号が出ているだけでマージ検知ループを仕掛ける | 全文を読んで、他セッションの PR のマージを明示的に待って停止していると確認できた場合のみ仕掛ける。参考情報としての言及は対象外 |
-| PR マージを中継した後、その issue の完了検知ループを張り直さない | 中継前に `resolved[$n]=1` でメインループから外れているため、中継しただけでは誰も見ていない状態に戻る。中継後は対象を絞って完了検知ループを再起動する |
+| PR マージを中継した後、その issue の完了検知ループを張り直さない | 中継前に `mark_resolved` でメインループから外れているため、中継しただけでは誰も見ていない状態に戻る。中継後は対象を絞って完了検知ループを再起動する |
+| 監視ループを起動した後、出力を確認せず次の作業へ進む | 起動数秒後に出力を読み、開始マーカー `監視開始:` が出ていてエラーが無いことを確認する。起動直後に落ちても完了通知は「終了した」としか言わない |
+| 監視スクリプトに連想配列（`declare -A`）や `${!var}` を使う | `.sh` ファイル化 + bash 実行だと macOS の bash 3.2 で即死する（Bash tool 直貼りの zsh では通るため気づきにくい）。空白区切りリスト + `eval` の書き方を維持する |
