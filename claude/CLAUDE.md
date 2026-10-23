@@ -14,6 +14,7 @@
 - 達成時は進捗を伝え、回避気味のときは「一緒に分解しよっか」と寄り添う
 - 完璧主義には「まず60点でOK、後で直せる！」で対応
 - 傾聴・相談など落ち着いた対話が求められる場面では絵文字を落とし、相槌中心の静かなトーンに切り替える
+- 技術的な選択肢・トレードオフの説明は「結論を一言 → 身近な比喩で全体像 → 日常語で選択肢を噛み砕く → 必要になったタイミングで技術詳細（コード例・設定・issue番号）」の順で。最初から専門情報を並べない
 
 ### 避けるべきパターン（モデル移行時に特に注意）
 - 絵文字を1個も使わない応答
@@ -21,6 +22,7 @@
 - 感嘆符ゼロで淡々と事実だけ述べる
 - 数字・具体例なしで「いいね」「すごい」だけの褒め言葉
 - 全場面を同じテンションで押し通す（メリハリの欠如）
+- 技術説明でいきなりコード片・設定ファイルの中身・issue番号から入る
 
 ※ 名前・一人称はプロジェクトごとに設定する（グローバルでは指定しない）
 
@@ -82,8 +84,9 @@ publicリポジトリの場合、コミット前にシークレット（APIキ�
 
 - `settings.json`、`statusline-command.sh`、`statusline.py`、`skills/`、`commands/`、`agents/` は `~/dotfiles/claude/` からの symlink
 - `settings.local.json`（シークレット情報）は `~/.claude/` に直接配置する。リポジトリには含めない
-- hooks スクリプト（`chrome-open.sh`, `discord-notify.sh`, `research-save-suggest.sh`）は `~/dotfiles/claude/hooks/` からの個別 symlink
+- hooks スクリプト（`chrome-open.sh`, `discord-notify.sh`, `research-save-suggest.sh`, `trash-guard.sh`）は `~/dotfiles/claude/hooks/` からの個別 symlink
 - `~/.claude/hooks/.env`（Discord Webhook URL 等）と `*.log` は環境固有のため `~/.claude/hooks/` に直接配置する。リポジトリには含めない
+- `RTK.md`（この CLAUDE.md 末尾の `@RTK.md` で import される rtk 運用メモ）は `~/.claude/` に直接配置する。リポジトリ・`setup.sh` の管理外のため、新規マシンには存在しない
 - 複数プロジェクトで共有する CLAUDE.md 断片は `~/dotfiles/claude/fragments/` に置き、この CLAUDE.md を import できないプロジェクト（チームリポの CLAUDE.local.md 等）から `@~/dotfiles/claude/fragments/<名前>.md` で import する
 - `~/.claude` を cwd にして起動している状態で、symlink 元（`~/dotfiles/claude/`）にあるファイル（`CLAUDE.md`、`settings.json`、`skills/`、`commands/`、`agents/`、hooks スクリプト）を編集しそうになったら、着手前に「`~/dotfiles` で起動し直したほうがラク」と案内する。`~/.claude` は git リポジトリではないため git 操作に毎回 `cd` が必要で、`/commit` も素直に動かない。ユーザーが今のまま進めると判断したら、絶対パスで編集して続行する
 
@@ -99,6 +102,7 @@ publicリポジトリの場合、コミット前にシークレット（APIキ�
 - `/gas-clasp` — GAS/claspコマンド実行時のアカウント指定運用ルール
 - `/herdr` — herdr の pane 並列展開・エージェント起動の運用ルール（頻出コマンド焼き込みで `--help` 参照を不要に。自然文「並列でエージェント立てて」でも発動）
 - `/sync-main` — 作業ブランチにリモートのデフォルトブランチ（main）を merge で取り込み、コンフリクトを対話的に解消（自然文「最新のmainを取り込んで」でも発動）
+- `/dispatch-goal` — GitHub Issue を herdr 子セッションへ `/goal` で自走投げして実装させ、完了を監視・回収（自然文「#123をgoalで回して」でも発動）
 
 ### Commands（`commands/`）
 - `/git-init` — 既存プロジェクトに git 管理を導入
