@@ -49,6 +49,7 @@
   3. `git worktree remove <worktreeパス>`
   4. `git branch -d <ブランチ>`（squash merge では「未マージ」と拒否されることがある。その場合のみ `-D`）
   5. `git push origin --delete <ブランチ>`
+- Orca の worktree を `orca worktree rm` で消すと、そのターミナル（走っているセッション）ごと閉じる。消す前に `orca terminal read --terminal <handle> --json` でセッションが止まっていること、`git status --short` で未コミットの変更が無いことを確かめ、どちらかに当たったら消さずに報告する（「マージされた＝作業が終わった」とは限らない）
 
 ## Pull Request の作成
 
@@ -67,6 +68,8 @@ spec・plan・design doc・Issue 本文など、あらゆるドキュメント�
 publicリポジトリの場合、コミット前にシークレット（APIキー、トークン、Webhook URL、個人情報等）が含まれていないか精査し、問題があれば警告する。
 
 リポジトリの公開状態は前提せず、`gh repo view --json visibility` で確認してから判断する。
+
+`~/dotfiles` のように複数のセッションやエディタから同時に触られうるリポジトリでは、編集のあと・コミットの前に `git diff` で差分が自分の変更だけか確かめる（他のセッションの未コミットの変更を巻き込んで、無関係な節を消してコミットしたことがある）。
 
 ## skill 化の提案
 
