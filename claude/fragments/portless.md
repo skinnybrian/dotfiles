@@ -1,6 +1,6 @@
 ## ローカル開発サーバー（portless）
 
-- web プロジェクトの dev server は `portless run` 経由で起動する（`dev` script があれば `portless run` だけでよい。例: `portless run npm run dev`）。ポート番号ではなく `https://<プロジェクト名>.localhost` でアクセスする
+- web プロジェクトの dev server は `portless run` 経由で起動する（`dev` script があれば `portless run` だけでよい。例: `portless run npm run dev`）。ポート番号ではなく `https://<プロジェクト名>.localhost` でアクセスする。**全プロジェクト共通のデフォルト**で、プロジェクト側の CLAUDE.md に記載がなくても適用する（`/serve` スキルもこのルールに従う）
 - linked git worktree ではブランチ名（最終セグメント）が自動でサブドメインになる（例: `https://feature-auth.myapp.localhost`）。起動中の URL は statusline に 🌐 で表示される
 - portless 未インストール環境（Android Linux 等）では従来どおり起動する（`command -v portless` で確認）
 - 死んだルートが残っていたら `portless prune` で掃除する

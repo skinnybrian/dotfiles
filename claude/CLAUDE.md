@@ -85,14 +85,17 @@ publicリポジトリの場合、コミット前にシークレット（APIキ�
 
 - `settings.json`、`statusline-command.sh`、`statusline.py`、`skills/`、`commands/`、`agents/` は `~/dotfiles/claude/` からの symlink
 - `settings.local.json`（シークレット情報）は `~/.claude/` に直接配置する。リポジトリには含めない
-- hooks スクリプト（`chrome-open.sh`, `discord-notify.sh`, `research-save-suggest.sh`）は `~/dotfiles/claude/hooks/` からの個別 symlink
+- hooks スクリプト（`chrome-open.sh`, `discord-notify.sh`, `research-save-suggest.sh`, `trash-guard.sh`）は `~/dotfiles/claude/hooks/` からの個別 symlink
 - `~/.claude/hooks/.env`（Discord Webhook URL 等）と `*.log` は環境固有のため `~/.claude/hooks/` に直接配置する。リポジトリには含めない
-- 複数プロジェクトで共有する CLAUDE.md 断片は `~/dotfiles/claude/fragments/` に置き、この CLAUDE.md を import できないプロジェクト（チームリポの CLAUDE.local.md 等）から `@~/dotfiles/claude/fragments/<名前>.md` で import する
+- 複数プロジェクトで共有する CLAUDE.md 断片は `~/dotfiles/claude/fragments/` に置き、この CLAUDE.md を import できないプロジェクト（チームリポの CLAUDE.local.md 等）から `@~/dotfiles/claude/fragments/<名前>.md` で import する。この CLAUDE.md も同じ断片を `@~/dotfiles/claude/fragments/<名前>.md` で読み込み、中身を二重に書かない（いまは portless の節）
 - `~/.claude` を cwd にして起動している状態で、symlink 元（`~/dotfiles/claude/`）にあるファイル（`CLAUDE.md`、`settings.json`、`skills/`、`commands/`、`agents/`、hooks スクリプト）を編集しそうになったら、着手前に「`~/dotfiles` で起動し直したほうがラク」と案内する。`~/.claude` は git リポジトリではないため git 操作に毎回 `cd` が必要で、`/commit` も素直に動かない。ユーザーが今のまま進めると判断したら、絶対パスで編集して続行する
 
 ## カスタムスキル / コマンド
 
 ### Skills（`skills/`）
+
+git 管理のものだけを載せる（Orca などが入れて `.git/info/exclude` で外しているスキルは載せない）。
+
 - `/commit` — 変更をコミット
 - `/consult` — 専門家ペルソナで分析
 - `/code-review` — コードレビュー実行
@@ -102,6 +105,7 @@ publicリポジトリの場合、コミット前にシークレット（APIキ�
 - `/gas-clasp` — GAS/claspコマンド実行時のアカウント指定運用ルール
 - `/herdr` — herdr の pane 並列展開・エージェント起動の運用ルール（頻出コマンド焼き込みで `--help` 参照を不要に。自然文「並列でエージェント立てて」でも発動）
 - `/sync-main` — 作業ブランチにリモートのデフォルトブランチ（main）を merge で取り込み、コンフリクトを対話的に解消（自然文「最新のmainを取り込んで」でも発動）
+- `/dispatch-goal` — GitHub Issue を herdr の子セッションへ /goal で自走投げし、完了を監視して回収・報告する（自然文「goalでやって」「#123をgoalで回して」でも発動）
 
 ### Commands（`commands/`）
 - `/git-init` — 既存プロジェクトに git 管理を導入
@@ -128,16 +132,7 @@ publicリポジトリの場合、コミット前にシークレット（APIキ�
 - **MCP サーバー**: Obsidian、Notion、pencil の MCP は利用不可（macOS のみ）
 - **Homebrew 非対応**: パッケージ管理は `apt`
 
-## ローカル開発サーバー（portless）
-
-- web プロジェクトの dev server は `portless run` 経由で起動する（`dev` script があれば `portless run` だけでよい。例: `portless run npm run dev`）。ポート番号ではなく `https://<プロジェクト名>.localhost` でアクセスする。**全プロジェクト共通のデフォルト**で、プロジェクト側の CLAUDE.md に記載がなくても適用する（`/serve` スキルもこのルールに従う）
-- linked git worktree ではブランチ名（最終セグメント）が自動でサブドメインになる（例: `https://feature-auth.myapp.localhost`）。起動中の URL は statusline に 🌐 で表示される
-- portless 未インストール環境（Android Linux 等）では従来どおり起動する（`command -v portless` で確認）
-- 死んだルートが残っていたら `portless prune` で掃除する
-- portless のプロキシが落ちていても、`localhost:<port>` への直接起動へ勝手にフォールバックしない。復旧（下記の `portless proxy start`）が要るかユーザーに確認する
-- worktree では先に依存を入れてから（`node_modules` は worktree ごとに独立）`portless run` する。発行された URL は `portless list` で確かめる。プロジェクトのドキュメントにある `http://localhost:<port>` は E2E の baseURL などとしてそのまま有効で、portless の URL と併用してよい
-- **devサーバーのプロセスをkillする前に、必ず `portless list` で対象appのPIDを確認し、そのPIDだけをkillする。** `ps aux | grep <worktreeパス>` のような自前の文字列一致でPIDを洗い出すと、たまたまそのパスをコマンドライン上に含む**共有リバースプロキシ本体**（`lsof` では `localhost:phrelaydbg` のような固定サービス名でLISTEN、全アプリ共通の入り口）まで巻き込んで一緒にkillしてしまうことがあり、その場合そのマシン上の**全portlessアプリのURLが一斉に502/接続不可**になる。誤って共有プロキシを落とした場合は `portless proxy start --port <既存のポート番号> --https` で復旧できる（生きている各devサーバーは自動的に再登録される。個別再起動は不要）。`portless proxy stop` は共有プロキシ全体を止めるコマンドなので、単一アプリの停止目的では使わない
-- チーム共有リポジトリなど、この CLAUDE.md を import できない場合は `~/dotfiles/claude/fragments/portless.md` を `@` import する（詳細はファイル構成節を参照）
+@~/dotfiles/claude/fragments/portless.md
 
 ## Notion access policy（MCP と CLI の使い分け）
 
