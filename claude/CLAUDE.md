@@ -85,7 +85,7 @@ publicリポジトリの場合、コミット前にシークレット（APIキ�
 
 - `settings.json`、`statusline-command.sh`、`statusline.py`、`skills/`、`commands/`、`agents/` は `~/dotfiles/claude/` からの symlink
 - `settings.local.json`（シークレット情報）は `~/.claude/` に直接配置する。リポジトリには含めない
-- hooks スクリプト（`chrome-open.sh`, `discord-notify.sh`, `research-save-suggest.sh`, `trash-guard.sh`）は `~/dotfiles/claude/hooks/` からの個別 symlink
+- hooks スクリプトは `~/dotfiles/claude/hooks/` の各ファイルを `~/.claude/hooks/` へ個別に symlink する（どれがあるかは `ls ~/dotfiles/claude/hooks/` で見る。ここに一覧は持たない）
 - `~/.claude/hooks/.env`（Discord Webhook URL 等）と `*.log` は環境固有のため `~/.claude/hooks/` に直接配置する。リポジトリには含めない
 - 複数プロジェクトで共有する CLAUDE.md 断片は `~/dotfiles/claude/fragments/` に置き、この CLAUDE.md を import できないプロジェクト（チームリポの CLAUDE.local.md 等）から `@~/dotfiles/claude/fragments/<名前>.md` で import する。この CLAUDE.md も同じ断片を `@~/dotfiles/claude/fragments/<名前>.md` で読み込み、中身を二重に書かない（いまは portless の節）
 - `~/.claude` を cwd にして起動している状態で、symlink 元（`~/dotfiles/claude/`）にあるファイル（`CLAUDE.md`、`settings.json`、`skills/`、`commands/`、`agents/`、hooks スクリプト）を編集しそうになったら、着手前に「`~/dotfiles` で起動し直したほうがラク」と案内する。`~/.claude` は git リポジトリではないため git 操作に毎回 `cd` が必要で、`/commit` も素直に動かない。ユーザーが今のまま進めると判断したら、絶対パスで編集して続行する
