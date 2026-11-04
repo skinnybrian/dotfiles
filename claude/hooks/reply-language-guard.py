@@ -4,7 +4,8 @@
 返答が日本語になっているかを機械で見る（グローバル CLAUDE.md「言語」を守らせる）。
 直近の返答（最後のユーザーの発言より後のアシスタントの文）と、その最後のメッセージのそれぞれで、
 日本語の文字（ひらがな・カタカナ・漢字）が英字の MAX_RATIO 倍に満たず、英字が MIN_LATIN 字以上あれば、
-止めて日本語で書き直させる。
+止めて日本語で書き直させる。最後の返答は日本語でも、途中の進捗のメッセージに英語のものがあれば、
+書き直しは求めず、日本語で一言だけ断って以後は日本語で書くよう止めて伝える。
 
 「日本語が 1 文字も無い」ではなく割合で見るのは、英語の返答の末尾に必ず付ける日本語の 1 行
 （※ 本回答は参考情報… など）が混ざっても見落とさないため。2026-11-04 に過去の返答 1,622 件で測り、
@@ -28,6 +29,11 @@ REASON = (
     "グローバル CLAUDE.md「言語」のとおり、同じ内容を日本語で書き直して返す"
     "（コード・コマンド・識別子は原語のまま）。"
 )
+REASON_INTERIM = (
+    "このターンの途中の進捗メッセージ {n} 件が英語だった（グローバル CLAUDE.md「言語」）。"
+    "最後の返答は書き直さなくてよい。日本語で一言だけ「途中を英語で書いた」と添えて終え、"
+    "以後は途中の進捗も日本語で書く。"
+)
 
 
 def is_real_user(entry):
@@ -42,7 +48,7 @@ def is_real_user(entry):
 
 
 def last_turn_texts(path):
-    """(ターン全体の文, 最後のメッセージの文) を返す"""
+    """(ターン全体の文, 最後のメッセージの文, 文のかたまりの一覧) を返す"""
     turn, last = [], []
     with open(path, encoding="utf-8") as f:
         for line in f:
@@ -62,7 +68,7 @@ def last_turn_texts(path):
                     if found:
                         turn += found
                         last = found
-    return "\n".join(turn), "\n".join(last)
+    return "\n".join(turn), "\n".join(last), turn
 
 
 def needs_japanese(text):
@@ -85,14 +91,18 @@ def main():
     if data.get("stop_hook_active"):
         return
     last = data.get("last_assistant_message")
-    turn = ""
+    turn, blocks = "", []
     path = data.get("transcript_path")
     if path and os.path.isfile(path):
-        turn, from_transcript = last_turn_texts(path)
+        turn, from_transcript, blocks = last_turn_texts(path)
         if not isinstance(last, str) or not last:
             last = from_transcript
     if needs_japanese(last) or needs_japanese(turn):
         print(json.dumps({"decision": "block", "reason": REASON}, ensure_ascii=False))
+        return
+    english = sum(1 for b in blocks if needs_japanese(b))
+    if english:
+        print(json.dumps({"decision": "block", "reason": REASON_INTERIM.format(n=english)}, ensure_ascii=False))
 
 
 if __name__ == "__main__":
