@@ -87,6 +87,15 @@
             "command": "~/.claude/hooks/discord-notify.sh"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/reply-language-guard.py",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "PreToolUse": [
@@ -116,6 +125,16 @@
           {
             "type": "command",
             "command": "fp=$(jq -r '.tool_input.file_path // empty'); case \"$fp\" in *CLAUDE.md) echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"CLAUDE.md が変更されました。`/claude-md-management:claude-md-improver` で監査を実行してください。\"}}' ;; esac"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "input=$(cat); case \"$input\" in *MEMORY.md*) printf %s \"$input\" | ~/.claude/hooks/memory-index-guard.py ;; esac",
+            "timeout": 10
           }
         ]
       }
